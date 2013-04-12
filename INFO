@@ -1,0 +1,5 @@
+title: Oregon Trail Remake
+contributers: rgarland armaunm zphricz mkoninckx
+type: game
+repo: ece2524.ece.vt.edu:orgtrail.git
+description: A remake of the classic Oregon Trail game. Will most likely be space themed but contain a lot of the same elements as the original. Will primarily be text-based, unless we have enough time to try and integrate some graphics.

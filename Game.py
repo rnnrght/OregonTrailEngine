@@ -85,19 +85,33 @@ for i in range(2, numCharacters+1):
 
 # Scavenge Time
 
-while hoursToScavenge != 0:
-    for supply in Supplies:
-
-        hours = hoursToScavenge+1
-        while hours > hoursToScavenge:
-            clearScreen()
-            print "You have " + str(hoursToScavenge) + " hours to scavenge for supplies\n"
-            print "You can scavenge " + str(supply.rate) + " " + supply.name + " per hour"
-            hours = input("How many hours will you scavenge for " + supply.name + "?: ")
-        hoursToScavenge -= hours
-        supply.amount += supply.rate * hours
-        if hoursToScavenge == 0:
+while True:
+    clearScreen()
+    print "You have " + str(hoursToScavenge) + " hours to scavenge for supplies:"
+    for i, supply in enumerate(Supplies):
+        print str(i+1) + ". Scavenge for " + supply.name + ": " + str(supply.amount)
+    print str(i+2) + ". Go on Adventure\n"
+    keyPressed = input("What do you want to do?: ") - 1
+    if keyPressed == i+1:
+        if hoursToScavenge >= 0:
             break
-
+        else:
+            clearScreen()
+            print "You have spent to many hours scavenging"
+            raw_input("Please make sure that your number of hours left is >= 0")
+    elif keyPressed >= 0 and keyPressed <= i:
+        clearScreen()
+        print "You have " + str(hoursToScavenge) + " hours to scavenge\n"
+        supplyName = Supplies[keyPressed].name
+        rate = Supplies[keyPressed].rate
+        print "You can scavenge " + supplyName + " at a rate of " + str(rate) + " per hour"
+        hours = input ("How many hours will you spend scavenging " + supplyName + "?: ")
+        hoursBefore = Supplies[keyPressed].amount / Supplies[keyPressed].rate
+        hoursToScavenge -= (hours - hoursBefore)
+        Supplies[keyPressed].amount = Supplies[keyPressed].rate * hours
+    else:
+        clearScreen()
+        raw_input("Please input a valid response...")
 
 # Begin Adventure
+

@@ -14,6 +14,9 @@ def getNumber(menu, min, max):
             print "ERROR: Input a valid number\n"
             isGood = True
         string = raw_input(menu)
+        if string == "":
+            isGood = False
+            continue
         for char in string:
             if ord(char) < 48 or ord(char) > 57:
                 isGood = False

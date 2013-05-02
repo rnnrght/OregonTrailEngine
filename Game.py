@@ -5,6 +5,39 @@ import os
 import random
 
 ##### VARIOUS FUNCTIONS #####
+def handleEvent(event):
+    clearScreen()
+    print event.description + "\n" + "Do you...\n"
+    for i, option in enumerate(event.options):
+	print str(i+1)+": "+event.options + "\n"
+    choice = getNumber("Enter your choice: ",1,i+1) -1;
+    x =random.randint(1,100)
+    if x>=event.chances(choice):
+	castEffect(event.goodEffects(choice))
+    else
+	castEffect(event.badEffects(choice))
+
+def castEffect(effect):
+    for i,att in effect.attribute:
+	amt=effect.amount(1);
+	if att = "food"
+	    Supplies[0]+=amt;    
+        elif att = "ammunition"
+	    Supplies[1]+=amt;
+        elif att = "money"
+	    Supplies[2]+=amt;
+        elif att = "meds"
+    	    Supplies[3]+=amt
+        elif att = "health"
+	    for char in Characters
+		char.health+=amt
+        elif att = "sick"
+	    for char in Characters
+		if amt=0:
+		    char.isSick=false
+		else
+		    char.isSick=true
+    print effect.message+"\n"
 
 def clearScreen():
     os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )

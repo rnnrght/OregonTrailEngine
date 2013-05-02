@@ -3,6 +3,7 @@
 from GameObjects import *
 import os
 import random
+from Parser import *
 
 ##### VARIOUS FUNCTIONS #####
 def handleEvent(event):
@@ -234,6 +235,8 @@ Events = []
 
 ##### VARIABLES TO PARSE #####
 
+datfiles = Parser()
+
 startScreen = (
 "                    DYSENTERY TRAIL                    \n"
 "In the year 20XX, the world succumbed to its poor diet.\n"
@@ -251,30 +254,30 @@ winScreen = (
 "    You have escaped from the clutches of dysentery      " )
 
 # Units that are travelled per travel cycle
-baseTravelRate = 100
+baseTravelRate = int(datfiles.get("baseTravelRate"))
 pace = ("normal", 1.0) # NOT PARSEABLE
 
 # Units eaten per travel cycle
-baseEatRate = 20
+baseEatRate = int(datfiles.get("baseEatRate"))
 meal = ("normal", 1.0) # NOT PARSEABLE
 
-hoursToScavenge = 24
+hoursToScavenge = int(datfiles.get("hoursToScavenge"))
 
-numCharacters = 3
+numCharacters = int(datfiles.get("numCharacters"))
 
 currentCity = 0 # NOT PARSEABLE
 
-sickChance = 15
-healthForSickRoll = 50 # Health below which characters can get sick
-lostHealthSick = 5
-lostHealthNoMeal = 5
-lostHealthSmallMeal = 1
-lostHealthSkimpyMeal = 3
-lostHealthFastTravel = 1
-lostHealthGruelingTravel = 3
-diseaseName = "dysentery"
+sickChance = int(datfiles.get("sickChance"))
+healthForSickRoll = int(datfiles.get("healthForSickRoll")) # Health below which characters can get sick
+lostHealthSick = int(datfiles.get("lostHealthSick"))
+lostHealthNoMeal = int(datfiles.get("lostHealthNoMeal"))
+lostHealthSmallMeal = int(datfiles.get("lostHealthSmallMeal"))
+lostHealthSkimpyMeal = int(datfiles.get("lostHealthSkimpyMeal"))
+lostHealthFastTravel = int(datfiles.get("lostHealthFastTravel"))
+lostHealthGruelingTravel = int(datfiles.get("lostHealthGruelingTravel"))
+diseaseName = datfiles.get("diseaseName")
 
-distanceUnit = "miles"
+distanceUnit = datfiles.get("distanceUnit")
 
 running = True # NOT PARSEABLE
 
@@ -287,6 +290,7 @@ Supplies.append(Supply("Money", 50, "dollars"))
 Supplies.append(Supply("Medicine", 1, "medkits"))
 
 # All of the cities: first arg is name, second is number of distance units to it
+"""
 Cities.append(City("Tokyo", 350.0))
 Cities.append(City("New York", 350.0))
 Cities.append(City("Toronto", 450.0))
@@ -297,6 +301,8 @@ Cities.append(City("Tenochtitlan", 450.0))
 Cities.append(City("Redmond", 400.0))
 Cities.append(City("Troy", 150.0))
 Cities.append(City("Gary", 550.0))
+"""
+Cities = datfiles.getCities()
 
 nameOfObstacle = "Dysentery"
 obstacleStatus = "Calm"

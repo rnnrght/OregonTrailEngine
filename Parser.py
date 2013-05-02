@@ -121,6 +121,7 @@ class Parser:
 		try:
 			return self.gameParams[paramName]
 		except KeyError:
+			print "WARNING: REQUEST MADE FOR NON-EXISTENT PARAMETER \"", paramName
 			return ""
 
 	def getEventDefs(self):

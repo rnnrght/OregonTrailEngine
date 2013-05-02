@@ -3,6 +3,7 @@ baseEatRate:20
 hoursToScavenge:24
 numCharacters:3
 sickChance:15
+healthForSickRoll:50
 lostHealthSick:5
 lostHealthNoMeal:1
 lostHealthSmallMeal:1

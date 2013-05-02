@@ -3,6 +3,7 @@
 from GameObjects import *
 import os
 import random
+from Parser import *
 
 ##### VARIOUS FUNCTIONS #####
 def handleEvent(event):
@@ -139,7 +140,7 @@ def travelLoop():
         if city.distanceTo > 0:
             if random.randint(1,100) <= eventChance:
                 clearScreen()
-                raw_input("EVENT OCCURED")
+                raw_input("EVENT OCCURED!")
 
         # Check for character death
         i = 0
@@ -240,6 +241,8 @@ Events = []
 
 ##### VARIABLES TO PARSE #####
 
+datfiles = Parser()
+
 startScreen = (
 "                    DYSENTERY TRAIL                    \n"
 "In the year 20XX, the world succumbed to its poor diet.\n"
@@ -257,59 +260,56 @@ winScreen = (
 "    You have escaped from the clutches of dysentery      " )
 
 # Units that are travelled per travel cycle
-baseTravelRate = 100
-pace = ("normal", 1.0) # NOT PARSEABLE
+baseTravelRate = int(datfiles.get("baseTravelRate"))
 
 # Units eaten per travel cycle
-baseEatRate = 20
-meal = ("normal", 1.0) # NOT PARSEABLE
+baseEatRate = int(datfiles.get("baseEatRate"))
 
-hoursToScavenge = 24
+hoursToScavenge = int(datfiles.get("hoursToScavenge"))
 
-numCharacters = 3
+numCharacters = int(datfiles.get("numCharacters"))
 
-currentCity = 0 # NOT PARSEABLE
 
-sickChance = 15
-healthForSickRoll = 50 # Health below which characters can get sick
-lostHealthSick = 5
-lostHealthNoMeal = 5
-lostHealthSmallMeal = 1
-lostHealthSkimpyMeal = 3
-lostHealthFastTravel = 1
-lostHealthGruelingTravel = 3
-diseaseName = "dysentery"
+sickChance = int(datfiles.get("sickChance"))
+healthForSickRoll = int(datfiles.get("healthForSickRoll")) # Health below which characters can get sick
+lostHealthSick = int(datfiles.get("lostHealthSick"))
+lostHealthNoMeal = int(datfiles.get("lostHealthNoMeal"))
+lostHealthSmallMeal = int(datfiles.get("lostHealthSmallMeal"))
+lostHealthSkimpyMeal = int(datfiles.get("lostHealthSkimpyMeal"))
+lostHealthFastTravel = int(datfiles.get("lostHealthFastTravel"))
+lostHealthGruelingTravel = int(datfiles.get("lostHealthGruelingTravel"))
+diseaseName = datfiles.get("diseaseName")
 
-eventChance = 15
+eventChance = int(datfiles.get("eventChance"))
 
-distanceUnit = "miles"
+distanceUnit = datfiles.get("distanceUnit")
 
-running = True # NOT PARSEABLE
-
-win = True # NOT PARSEABLE
+foodName = datfiles.get("foodName")
+ammunitionName = datfiles.get("ammunitionName")
+moneyName = datfiles.get("moneyName")
+medicineName = datfiles.get("medicineName")
+foodRate = int(datfiles.get("foodRate"))
+ammunitionRate = int(datfiles.get("ammunitionRate"))
+moneyRate = int(datfiles.get("moneyRate"))
+medicineRate = int(datfiles.get("medicineRate"))
+foodUnit = datfiles.get("foodUnit")
+ammunitionUnit = datfiles.get("ammunitionUnit")
+moneyUnit = datfiles.get("moneyUnit")
+medicineUnit = datfiles.get("medicineUnit")
 
 # All of the supply types: first arg is name, second is number gatherable per hour
-Supplies.append(Supply("Food", 125, "pounds"))
-Supplies.append(Supply("Ammunition", 20, "rounds"))
-Supplies.append(Supply("Money", 50, "dollars"))
-Supplies.append(Supply("Medicine", 1, "medkits"))
+Supplies.append(Supply(foodName, foodRate, foodUnit))
+Supplies.append(Supply(ammunitionName, ammunitionRate, ammunitionUnit))
+Supplies.append(Supply(moneyName, moneyRate, moneyUnit))
+Supplies.append(Supply(medicineName, medicineRate, medicineUnit))
 
-# All of the cities: first arg is name, second is number of distance units to it
-Cities.append(City("Tokyo", 350.0))
-Cities.append(City("New York", 350.0))
-Cities.append(City("Toronto", 450.0))
-Cities.append(City("Vienna", 400.0))
-Cities.append(City("Richmond", 250.0))
-Cities.append(City("San Fransisco", 500.0))
-Cities.append(City("Tenochtitlan", 450.0))
-Cities.append(City("Redmond", 400.0))
-Cities.append(City("Troy", 150.0))
-Cities.append(City("Gary", 550.0))
+Cities = datfiles.getCities()
 
-nameOfObstacle = "Dysentery"
-obstacleStatus = "Calm"
-# Obstacle to pass (I.E. the river, or zambies)
-# Status holds the difficulty of passing
+meal = ("normal", 1.0) # NOT PARSEABLE
+pace = ("normal", 1.0) # NOT PARSEABLE
+running = True # NOT PARSEABLE
+currentCity = 0 # NOT PARSEABLE
+win = True # NOT PARSEABLE
 
 ##########################
 

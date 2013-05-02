@@ -6,31 +6,48 @@ import random
 
 ##### VARIOUS FUNCTIONS #####
 
+def getNumber(menu, min, max):
+    isGood = True
+    while True:
+        clearScreen()
+        if isGood == False:
+            print "ERROR: Input a valid number\n"
+            isGood = True
+        string = raw_input(menu)
+        for char in string:
+            if ord(char) < 48 or ord(char) > 57:
+                isGood = False
+                break
+
+        if isGood:
+            num = int(string)
+            if num >= min and num <= max:
+                break
+        isGood = False
+    return num
+
 def clearScreen():
     os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
 
-def displayStatus():
-    clearScreen()
+def getStatus():
     global currentCity, distanceUnit, Supplies, diseaseName
     city = Cities[currentCity]
 
-    print "TRAVELLING\n"
-    print "Heading to: " +  city.name
-    print "Distance: " +  str(city.distanceTo) + " " + distanceUnit + "\n"
-    print "Pace of travel: " + pace[0]
-    print "Food per meal: " + meal[0] + "\n"
+    string = "TRAVELLING\n\n" + "Heading to: " +  city.name + "\nDistance: " +  str(city.distanceTo) + " " + distanceUnit + "\n\n"
+    string += "Pace of travel: " + pace[0] + "\nFood per meal: " + meal[0] + "\n"
 
     for supply in Supplies:
-        print supply.name + ": " + str(supply.amount) + " " + supply.unit
+        string += supply.name + ": " + str(supply.amount) + " " + supply.unit + '\n'
 
-    print ""
+    string += "\n"
 
     for character in Characters:
-        print character.name + ": "
-        print "- Health: " + str(character.health)
+        string += character.name + ": \n"
+        string += "- Health: " + str(character.health) + '\n'
         if character.isSick:
-            print "- Has " + diseaseName
-        print ""
+            string += "- Has " + diseaseName + '\n'
+        string += "\n"
+    return string
 
 def travelLoop():
     global currentCity, Supplies, baseEatRate, Characters, baseTravelRate, pace, meal, win
@@ -40,9 +57,10 @@ def travelLoop():
 
     # Loop until city is reached
     while city.distanceTo > 0:
-        displayStatus()
-        choice = raw_input("1. Continue\n2. Travel Options\nWhat will you do?: ")
-        if choice == "2":
+        string = getStatus()
+        string += "1. Continue\n2. Travel Options\nWhat will you do?: "
+        choice = getNumber(string, 1, 2)
+        if choice == 2:
             travelOptions()
             continue
 
@@ -102,18 +120,11 @@ def travelLoop():
 def travelOptions():
     clearScreen()
     global pace, meal
-    print "TRAVEL OPTIONS\n"
-    print "Travel rate: " + pace[0]
-    print "1. Normal pace"
-    print "2. Fast pace"
-    print "3. Grueling pace\n"
-    print "Meal amount: " + meal[0]
-    print "4. Normal meal"
-    print "5. Small meal"
-    print "6. Skimpy meal\n"
-    print "7. Heal party member\n"
-    print "8. Done"
-    choice = input("What would you like to do?: ")
+    string =  "TRAVEL OPTIONS\n\nTravel rate: " + pace[0] + "\n1. Normal pace"
+    string += "\n2. Fast pace\n3. Grueling pace\n\nMeal amount: " + meal[0]
+    string += "\n4. Normal meal\n5. Small meal\n6. Skimpy meal\n\n7. Heal party member\n8. Done"
+    string += "\n\nWhat would you like to do?: "
+    choice = getNumber(string, 1, 8)
     if choice == 1:
         pace = ("normal", 1.0)
     elif choice == 2:
@@ -136,19 +147,18 @@ def healMember():
     global Characters
     global Supplies
     clearScreen()
-    print "HEAL A PARTY MEMBER\n"
-    print "You have: " + str(Supplies[3].amount) + " medicine\n"
+    string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + " medicine\n\n"
 
     for i, character in enumerate(Characters):
-        print str(i+1) + ". Heal" + character.name + ": "
-        print "- Health: " + str(character.health)
+        string += str(i+1) + ". Heal" + character.name + ": \n"
+        string += "- Health: " + str(character.health) + '\n'
         if character.isSick:
-            print "- Has " + diseaseName
-        print ""
+            string += "- Has " + diseaseName + '\n'
+        string += "\n"
 
-    print str(i+2) + ". Go Back"
+    string += str(i+2) + ". Go Back\n\nWhat would you like to do?: "
 
-    choice = input("What would you like to do?: ") - 1
+    choice = getNumber(string, 1, len(Characters) + 1) - 1
 
     if choice >= 0 and choice < len(Characters):
         if Supplies[3].amount == 0:
@@ -283,33 +293,27 @@ for i in range(2, numCharacters+1):
 # Scavenge Time
 
 while True:
-    clearScreen()
-    print "You have " + str(hoursToScavenge) + " hours to scavenge for supplies:"
+    string = "You have " + str(hoursToScavenge) + " hours to scavenge for supplies:\n"
     for i, supply in enumerate(Supplies):
-        print str(i+1) + ". Scavenge for " + supply.name + ": " + str(supply.amount) + " " + supply.unit
-    print str(i+2) + ". Go on Adventure\n"
-    keyPressed = input("What do you want to do?: ") - 1
+        string += str(i+1) + ". Scavenge for " + supply.name + ": " + str(supply.amount) + " " + supply.unit + '\n'
+    string += str(i+2) + ". Go on Adventure\nWhat do you want to do?: "
+    keyPressed = getNumber(string, 1, len(Supplies)+1) - 1
     if keyPressed == i+1:
-        if hoursToScavenge >= 0:
-            break
-        else:
-            clearScreen()
-            print "You have spent to many hours scavenging!"
-            raw_input("Please make sure that you don't use more time than you have.")
-    elif keyPressed >= 0 and keyPressed <= i:
+        break
+    else:
         clearScreen()
-        print "You have " + str(hoursToScavenge) + " hours to scavenge\n"
         supplyName = Supplies[keyPressed].name
         rate = Supplies[keyPressed].rate
+        amount = Supplies[keyPressed].amount
         unit = Supplies[keyPressed].unit
-        print "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per hour"
-        hours = input ("How many hours will you spend scavenging " + supplyName + "?: ")
+        time = hoursToScavenge + amount / rate
+        string = "You have " + str(time) + " hours to scavenge\n\n"
+        string += "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per houri\n"
+        string += "How many hours will you spend scavenging " + supplyName + "?: "
+        hours = getNumber(string, 0, time)
         hoursBefore = Supplies[keyPressed].amount / Supplies[keyPressed].rate
         hoursToScavenge -= (hours - hoursBefore)
         Supplies[keyPressed].amount = Supplies[keyPressed].rate * hours
-    else:
-        clearScreen()
-        raw_input("Please input a valid response...")
 
 # Begin Adventure
 

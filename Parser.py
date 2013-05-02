@@ -4,12 +4,13 @@ import random
 
 class Parser:
 	def __init__(self):
+
 		#Parse in basic game parameters
-		#Each game parameter is on its own line.
-		#Each line has the name of the attribute, then a colon, then the value.
-		#For example:
-		#partsRescName:flux capacitors
-		#defines an attribute called "partsRescName" with the value "flux capacitors"
+			#Each game parameter is on its own line.
+			#Each line has the name of the attribute, then a colon, then the value.
+			#For example:
+				#partsRescName:flux capacitors
+			#defines an attribute called "partsRescName" with the value "flux capacitors"
 		data = open("Game.dat", "r")
 		self.gameParams = {}
 		for line in data:
@@ -25,9 +26,17 @@ class Parser:
 		data.close
 
 		#Parse in event definitions.
-		#Each event definition is on its own line.
-		#Each line has the name of the event, its description, then a list of options.
-		#Each options consist of three fields
+			#Each event definition is on its own line.
+			#Each line has the name of the event, its description, then a bunch of options.
+			#Options are represented by a series of additional fields:
+				#1. the text for the option
+				#2. the chance of a good effect for the option
+				#3. the resources affected by a good effect
+				#4. the amounts of resource added by a good effect
+				#5. text for the good effect
+				#6. the resources affected by a bad effect
+				#7. the amounts of resource added by a bad effect
+				#8. text for the bad effect
 		data = open("Event.dat", "r")
 		self.eventDefs = {}
 		for line in data:
@@ -54,7 +63,7 @@ class Parser:
 			while i < len(rawEventData):
 				try:
 					newEventOptions.append(rawEventData[i])
-					newEventChances.append(rawEventData[i+1])
+					newEventChances.append(int(rawEventData[i+1]))
 					newEventGoodEffects.append(Effect(rawEventData[i+2], rawEventData[i+3], rawEventData[i+4]))
 					newEventBadEffects.append(Effect(rawEventData[i+5], rawEventData[i+6], rawEventData[i+7]))
 				except IndexError:
@@ -66,12 +75,21 @@ class Parser:
 					newEventBadEffects = []
 					i = i+8
 					continue
+				except ValueError:
+					print "Warning: expected to be able to parse section of line in Event.dat to integer type. Line follows:"
+					newEventOptions = []
+					newEventChances = []
+					newEventGoodEffects = []
+					newEventBadEffects = []
+					i=i+8
+					continue
 				i = i+8
 
 			newEvent = Event(newEventName, newEventDescription, newEventOptions, newEventChances, newEventGoodEffects, newEventBadEffects)
 			self.eventDefs[newEventName] = newEvent
 		
 		data.close()
+
 
 	def allAttributes(self):
 		return self.gameParams

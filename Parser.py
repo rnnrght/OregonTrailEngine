@@ -1,5 +1,6 @@
 from GameObjects import Effect
 from GameObjects import Event
+from GameObjects import City
 import random
 
 class Parser:
@@ -40,12 +41,10 @@ class Parser:
 		data = open("Event.dat", "r")
 		self.eventDefs = {}
 		for line in data:
-			print line
 			line = line.strip()
 			if line == "": #again, skip blank lines
 				continue
 			rawEventData = line.split(":")
-			print rawEventData
 			newEventName = ""
 			newEventDescription = ""
 			newEventOptions = []
@@ -90,6 +89,30 @@ class Parser:
 		
 		data.close()
 
+		#Parse in cities.
+		#Each city is defined on its own line by a name, a colon, then the distance to the next city.
+		#So, for example:
+			#Tokyo:400
+
+		self.cities = []
+		data = open("Cities.dat", "r")
+		for line in data:
+			line = line.strip()
+			if line == "":
+				continue
+			rawCityData = line.split(":")
+			try:
+				self.cities.append(City(rawCityData[0], float(rawCityData[1])))
+			except IndexError:
+				print "Warning: problem reading line in Cities.dat: ", line
+				continue
+			except ValueError:
+				print "Warning: could not convert distance to float: ", line
+				continue
+
+		data.close()
+
+	
 
 	def allAttributes(self):
 		return self.gameParams
@@ -105,7 +128,9 @@ class Parser:
 
 	def getEvent(self):
 		return self.eventDefs[random.choice(self.eventDefs.keys())]
-		
+
+	def getCities(self):
+		return self.cities
 
 if __name__ == '__main__' : #run this file directly for a quick self-test
 	print "Parser self-test:"
@@ -126,3 +151,8 @@ if __name__ == '__main__' : #run this file directly for a quick self-test
 	print "- printing a random event"
 	print parser.getEvent().name
 	print parser.getEvent().description
+
+	print "- printing city names"
+	for city in parser.getCities():
+		print city.name
+		print city.distanceTo

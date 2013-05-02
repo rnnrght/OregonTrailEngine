@@ -113,7 +113,7 @@ def getStatus():
 
 def travelLoop():
     global currentCity, Supplies, baseEatRate, Characters, baseTravelRate, pace, meal, win, eventChance
-    global mainCharacter, running, sickChance, healthForSickRoll, lostHealthSick, lostHealthNoMeal
+    global mainCharacter, running, sickChance, healthForSickRoll, lostHealthSick, lostHealthNoMeal, datfiles
     global lostHealthSmallMeal, lostHealthSkimpyMeal, lostHealthFastTravel, lostHealthGruelingTravel
     city = Cities[currentCity]
 
@@ -166,6 +166,8 @@ def travelLoop():
             if random.randint(1,100) <= eventChance:
                 clearScreen()
                 raw_input("EVENT OCCURED!")
+                event = datfiles.getEvent()
+                handleEvent(event)
 
         # Check for character death
         i = 0

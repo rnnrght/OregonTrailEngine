@@ -136,7 +136,7 @@ def healMember():
     global Characters
     global Supplies
     clearScreen()
-    print "HEAL A PART MEMBER\n"
+    print "HEAL A PARTY MEMBER\n"
     print "You have: " + str(Supplies[3].amount) + " medicine\n"
 
     for i, character in enumerate(Characters):

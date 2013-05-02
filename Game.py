@@ -21,7 +21,7 @@ def displayStatus():
     print "Food per meal: " + meal[0] + "\n"
 
     for supply in Supplies:
-        print supply.name + ": " + str(supply.amount)
+        print supply.name + ": " + str(supply.amount) + " " + supply.unit
 
     print ""
 
@@ -216,7 +216,7 @@ hoursToScavenge = 24
 
 numCharacters = 3
 
-currentCity = 0
+currentCity = 0 # NOT PARSEABLE
 
 sickChance = 15
 healthForSickRoll = 50 # Health below which characters can get sick
@@ -235,10 +235,10 @@ running = True # NOT PARSEABLE
 win = True # NOT PARSEABLE
 
 # All of the supply types: first arg is name, second is number gatherable per hour
-Supplies.append(Supply("Food", 125))
-Supplies.append(Supply("Ammunition", 20))
-Supplies.append(Supply("Money", 50))
-Supplies.append(Supply("Medicine", 1))
+Supplies.append(Supply("Food", 125, "pounds"))
+Supplies.append(Supply("Ammunition", 20, "rounds"))
+Supplies.append(Supply("Money", 50, "dollars"))
+Supplies.append(Supply("Medicine", 1, "medkits"))
 
 # All of the cities: first arg is name, second is number of distance units to it
 Cities.append(City("Tokyo", 350.0))
@@ -286,7 +286,7 @@ while True:
     clearScreen()
     print "You have " + str(hoursToScavenge) + " hours to scavenge for supplies:"
     for i, supply in enumerate(Supplies):
-        print str(i+1) + ". Scavenge for " + supply.name + ": " + str(supply.amount)
+        print str(i+1) + ". Scavenge for " + supply.name + ": " + str(supply.amount) + " " + supply.unit
     print str(i+2) + ". Go on Adventure\n"
     keyPressed = input("What do you want to do?: ") - 1
     if keyPressed == i+1:
@@ -301,7 +301,8 @@ while True:
         print "You have " + str(hoursToScavenge) + " hours to scavenge\n"
         supplyName = Supplies[keyPressed].name
         rate = Supplies[keyPressed].rate
-        print "You can scavenge " + supplyName + " at a rate of " + str(rate) + " per hour"
+        unit = Supplies[keyPressed].unit
+        print "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per hour"
         hours = input ("How many hours will you spend scavenging " + supplyName + "?: ")
         hoursBefore = Supplies[keyPressed].amount / Supplies[keyPressed].rate
         hoursToScavenge -= (hours - hoursBefore)

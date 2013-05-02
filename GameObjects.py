@@ -6,10 +6,11 @@ class Character:
         self.isSick = False
 
 class Supply:
-    def __init__(self, name, rate):
+    def __init__(self, name, rate, unit):
         self.name = name
         self.rate = rate
         self.amount = 0
+        self.unit = unit
 
 class City:
     def __init__(self, name, distanceTo):
@@ -18,12 +19,12 @@ class City:
 
 class Effect:
     def __init__(self, attribute, amount, message):
-	self.attribute = attrbute
-	self.amount = amount
+	self.attribute = attribute.split("/")
+	self.amount = amount.split("/")
 	self.message = message
 
 class Event:
-    def __init__(self, name, decription, options, chances, goodEffects, badEffects):
+    def __init__(self, name, description, options, chances, goodEffects, badEffects):
         self.name = name #same as key
 	self.description = description #event message
 	self.options = options#array of options

@@ -1,0 +1,13 @@
+foodRescName:protein packs
+ammoRescName:blaster batteries
+partsRescName:flux capacitors
+fuelRescName:plutonium rods
+moneyRescName:credits
+
+foodScavRate:10
+ammoScavRate:15
+partsScavRate:2
+fuelScavRate:1
+moneyScavRate:200
+
+obstacleName:River of Dysentery

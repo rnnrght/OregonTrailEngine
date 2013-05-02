@@ -19,8 +19,8 @@ def displayStatus():
 
     print "Heading to: " +  city.name
     print "Distance: " +  str(city.distanceTo) + " " + distanceUnit + "\n"
-    print "Pace of travel: " + pace
-    print "Food per meal: " + meal + "\n"
+    print "Pace of travel: " + pace[0]
+    print "Food per meal: " + meal[0] + "\n"
 
     for supply in Supplies:
         print supply.name + ": " + str(supply.amount)
@@ -45,6 +45,14 @@ def travelLoop():
     global win
     global mainCharacter
     global running
+    global sickChance
+    global healthForSickRoll
+    global lostHealthSick
+    global lostHealthNoMeal
+    global lostHealthSmallMeal
+    global lostHealthSkimpyMeal
+    global lostHealthFastTravel
+    global lostHealthGruelingTravel
     city = Cities[currentCity]
 
     # Loop until city is reached
@@ -55,45 +63,37 @@ def travelLoop():
             travelOptions()
             continue
 
-        if pace == "normal":
-            travelRateFactor = 1.0
-        elif pace == "fast":
-            travelRateFactor = 1.25
+        if pace[0] == "fast":
             for character in Characters:
-                character.health -= 2
-        elif pace == "grueling":
-            travelRateFactor = 1.5
+                character.health -= lostHealthFastTravel
+        elif pace[0] == "grueling":
             for character in Characters:
-                character.health -= 5
+                character.health -= lostHealthGruelingTravel
 
         # Travel a little to the city
-        city.distanceTo -= baseTravelRate * travelRateFactor
+        city.distanceTo -= baseTravelRate * pace[1]
 
         # Eat the supplies, or subtract health
         if Supplies[0].amount != 0:
-            if meal == "normal":
-                eatRateFactor = 1.0
-            elif meal == "small":
-                eatRateFactor = .75
+            if meal[0] == "small":
                 for character in Characters:
-                    character.health -= 2
-            elif meal == "skimpy":
-                eatRateFactor = 0.5
+                    character.health -= lostHealthSmallMeal
+            elif meal[0] == "skimpy":
                 for character in Characters:
-                    character.health -= 5
-            Supplies[0].amount -= baseEatRate * eatRateFactor * len(Characters)
+                    character.health -= lostHealthSkimpyMeal
+            Supplies[0].amount -= baseEatRate * meal[1] * len(Characters)
         else:
             for character in Characters:
-                character.health -= 8
+                character.health -= lostHealthNoMeal
         if Supplies[0].amount < 0:
             Supplies[0].amount = 0
 
         # Handle sick character, and perfom sickness rolls
         for character in Characters:
             if character.isSick:
-                character.health -= 5
-            elif character.health < 50:
-                if random.randint(1,100) > 85:
+                character.health -= lostHealthSick
+            elif character.health < healthForSickRoll:
+                if random.randint(1,100) <= sickChance:
                     character.isSick = True
                     clearScreen()
                     raw_input(character.name + " has gotten sick!")
@@ -131,17 +131,17 @@ def travelOptions():
     print "7. Done"
     choice = input("What would you like to do?: ")
     if choice == 1:
-        pace = "normal"
+        pace = ("normal", 1.0)
     elif choice == 2:
-        pace = "fast"
+        pace = ("fast", 1.25)
     elif choice == 3:
-        pace = "grueling"
+        pace = ("grueling", 1.5)
     elif choice == 4:
-        meal = "normal"
+        meal = ("normal", 1.0)
     elif choice == 5:
-        meal = "small"
+        meal = ("small", .75)
     elif choice == 6:
-        meal = "skimpy"
+        meal = ("skimpy", 0.5)
     elif choice == 7:
         return
     travelOptions()
@@ -188,11 +188,11 @@ winScreen = (
 
 # Units that are travelled per travel cycle
 baseTravelRate = 100
-pace = "normal" # NOT PARSEABLE
+pace = ("normal", 1.0) # NOT PARSEABLE
 
 # Units eaten per travel cycle
 baseEatRate = 20
-meal = "normal" # NOT PARSEABLE
+meal = ("normal", 1.0) # NOT PARSEABLE
 
 hoursToScavenge = 24
 
@@ -200,6 +200,14 @@ numCharacters = 3
 
 currentCity = 0
 
+sickChance = 15
+healthForSickRoll = 50 # Health below which characters can get sick
+lostHealthSick = 5
+lostHealthNoMeal = 5
+lostHealthSmallMeal = 1
+lostHealthSkimpyMeal = 3
+lostHealthFastTravel = 1
+lostHealthGruelingTravel = 3
 diseaseName = "dysentery"
 
 distanceUnit = "miles"

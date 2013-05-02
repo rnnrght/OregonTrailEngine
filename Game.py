@@ -391,6 +391,10 @@ while True:
 while running and currentCity < len(Cities):
     travelLoop()
 
+    # City event
+    if currentCity != len(Cities):
+        pass
+
 clearScreen()
 
 if win:

@@ -12,7 +12,10 @@ def handleEvent(event):
     toPrint = event.description + "\n" + "Do you...\n"
     for i, option in enumerate(event.options):
         canDo=True
-        for goodAtt, badAtt, goodAmt, badAmt in zip(event.goodEffects.attribute,event.badEffects.attribute, event.goodEffects.amount, event.badEffects.amount):
+        for goodAtt, badAtt, goodAmt, badAmt in zip(event.goodEffects.attribute,
+                                                    event.badEffects.attribute,
+                                                    event.goodEffects.amount,
+                                                    event.badEffects.amount):
             for j, att in enumerate("food","ammunition","money","meds"):
                 if goodAtt == att and goodAmt + Supplies[j] < 0:
                     canDo=False

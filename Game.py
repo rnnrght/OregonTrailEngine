@@ -11,12 +11,10 @@ def clearScreen():
 
 def displayStatus():
     clearScreen()
-    global currentCity
-    global distanceUnit
-    global Supplies
-    global diseaseName
+    global currentCity, distanceUnit, Supplies, diseaseName
     city = Cities[currentCity]
 
+    print "TRAVELLING\n"
     print "Heading to: " +  city.name
     print "Distance: " +  str(city.distanceTo) + " " + distanceUnit + "\n"
     print "Pace of travel: " + pace[0]
@@ -35,24 +33,9 @@ def displayStatus():
         print ""
 
 def travelLoop():
-    global currentCity
-    global Supplies
-    global baseEatRate
-    global Characters
-    global baseTravelRate
-    global pace
-    global meal
-    global win
-    global mainCharacter
-    global running
-    global sickChance
-    global healthForSickRoll
-    global lostHealthSick
-    global lostHealthNoMeal
-    global lostHealthSmallMeal
-    global lostHealthSkimpyMeal
-    global lostHealthFastTravel
-    global lostHealthGruelingTravel
+    global currentCity, Supplies, baseEatRate, Characters, baseTravelRate, pace, meal, win
+    global mainCharacter, running, sickChance, healthForSickRoll, lostHealthSick, lostHealthNoMeal
+    global lostHealthSmallMeal, lostHealthSkimpyMeal, lostHealthFastTravel, lostHealthGruelingTravel
     city = Cities[currentCity]
 
     # Loop until city is reached
@@ -118,17 +101,18 @@ def travelLoop():
 
 def travelOptions():
     clearScreen()
-    global pace
-    global meal
-    print "Travel rate:"
+    global pace, meal
+    print "TRAVEL OPTIONS\n"
+    print "Travel rate: " + pace[0]
     print "1. Normal pace"
     print "2. Fast pace"
     print "3. Grueling pace\n"
-    print "Meal amount:"
+    print "Meal amount: " + meal[0]
     print "4. Normal meal"
     print "5. Small meal"
     print "6. Skimpy meal\n"
-    print "7. Done"
+    print "7. Heal party member\n"
+    print "8. Done"
     choice = input("What would you like to do?: ")
     if choice == 1:
         pace = ("normal", 1.0)
@@ -143,8 +127,40 @@ def travelOptions():
     elif choice == 6:
         meal = ("skimpy", 0.5)
     elif choice == 7:
+        healMember()
+    elif choice == 8:
         return
     travelOptions()
+
+def healMember():
+    global Characters
+    global Supplies
+    clearScreen()
+    print "HEAL A PART MEMBER\n"
+    print "You have: " + str(Supplies[3].amount) + " medicine\n"
+
+    for i, character in enumerate(Characters):
+        print str(i+1) + ". Heal" + character.name + ": "
+        print "- Health: " + str(character.health)
+        if character.isSick:
+            print "- Has " + diseaseName
+        print ""
+
+    print str(i+2) + ". Go Back"
+
+    choice = input("What would you like to do?: ") - 1
+    if Supplies[3].amount == 0:
+        clearScreen()
+        raw_input("You do not have enough medicine!")
+        choice = len(Characters)
+
+    if choice >= 0 and choice < len(Characters):
+        Characters[choice].isSick = False
+        Characters[choice].health += 25
+        if Characters[choice].health > 100:
+            Characters[choice].health = 100
+        Supplies[3].amount -= 1
+        healMember()
 
 Characters = []
 # Characters[0] = Main character
@@ -155,10 +171,8 @@ Supplies = []
 
 # Supplies[0] = Food
 # Supplies[1] = Ammunition
-# Supplies[2] = Spare Parts
-# Supplies[3] = Fuel
-# Supplies[4] = Monies
-# Supplies[5] = Meds
+# Supplies[2] = Monies
+# Supplies[3] = Meds
 
 Cities = []
 # Each city has a name, distance to next city
@@ -217,12 +231,10 @@ running = True # NOT PARSEABLE
 win = True # NOT PARSEABLE
 
 # All of the supply types: first arg is name, second is number gatherable per hour
-Supplies.append(Supply("Food", 100))
-Supplies.append(Supply("Ammunition", 100))
-Supplies.append(Supply("Spare Parts", 100))
-Supplies.append(Supply("Fuel", 100))
-Supplies.append(Supply("Money", 100))
-Supplies.append(Supply("Medicine", 100))
+Supplies.append(Supply("Food", 125))
+Supplies.append(Supply("Ammunition", 20))
+Supplies.append(Supply("Money", 50))
+Supplies.append(Supply("Medicine", 1))
 
 # All of the cities: first arg is name, second is number of distance units to it
 Cities.append(City("Tokyo", 350.0))

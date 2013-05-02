@@ -19,3 +19,8 @@ class City:
 class Event:
     def __init__(self, name):
         self.name = name
+	self.description = description
+	self.options = options
+	self.chances = chances
+	self.goodEffects = goodEffects 
+	self.badEffects = badEffects

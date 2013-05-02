@@ -7,39 +7,61 @@ import random
 ##### VARIOUS FUNCTIONS #####
 def handleEvent(event):
     clearScreen()
-    print event.description + "\n" + "Do you...\n"
+    dontInclude = []
+    toPrint = event.description + "\n" + "Do you...\n"
     for i, option in enumerate(event.options):
-        print str(i+1)+": "+event.options + "\n"
-    choice = getNumber("Enter your choice: ",1,i+1) -1;
-    x =random.randint(1,100)
-    if x>=event.chances(choice):
+        canDo=True
+        for goodAtt, badAtt, goodAmt, badAmt in zip(event.goodEffects.attribute,event.badEffects.attribute, event.goodEffects.amount, event.badEffects.amount):
+            for j, att in enumerate("food","ammunition","money","meds"):
+                if goodAtt == att and goodAmt + Supplies[j] < 0:
+                    canDo=False
+                elif badAtt == att and badAmt + Supllies[j] < 0:
+                    canDo=False
+        if canDo:
+            toPrint += str(i+1)+": "+event.options + "\n"
+        else:
+            dontInclude.append(i+1)
+            toPrint += str(i+1)+": Cannot choose, not enough supplies.\n"
+
+    choice = getNumber(toPrint + "Enter your choice: ",1,i+1, dontInclude) -1
+    x = random.randint(1,100)
+    if x <= enumerate(Characters)*event.chances(choice):
         castEffect(event.goodEffects(choice))
     else:
         castEffect(event.badEffects(choice))
 
 def castEffect(effect):
-    for i, att in effect.attribute:
-        amt=effect.amount(1);
-        if att == "food":
-            Supplies[0]+=amt;
-        elif att == "ammunition":
-            Supplies[1]+=amt;
-        elif att == "money":
-            Supplies[2]+=amt;
-        elif att == "meds":
-                Supplies[3]+=amt
-        elif att == "health":
-            for char in Characters:
-                char.health+=amt
+    for att, amt in zip(effect.attribute,effect.amount):
+        supplyEffected=False
+        for j, checkAtt in enumerate("food","ammunition","money","meds"):
+            if att == checkAtt:
+                Supplies[j]+=amt
+                supplyEffected=True
+        if att == "health":
+            if amt > 0:
+                notFullChars = [character for character in Characters if character.health != 100]
+                char = random.choice(notFullChars)
+            else:
+                char = random.choice(Characters)
+            char.health+=amt
         elif att == "sick":
-            for char in Characters:
-                if amt == 0:
-                    char.isSick=false
-                else:
-                    char.isSick=true
+            if amt == 0:
+                sickChars = [character for character in Characters if character.isSick]
+                if len(sickChars)>0:
+                    char = random.choice(sickChars)
+                    char.isSick=False
+            else:
+                healthyChars = [character for character in Characters if not character.isSick]
+                if len(healthyChars)>0:
+                    char = random.choice(healthyChars)
+                    char.isSick=True
+        elif att == "nothing" or supplyEffect:
+            pass
+        else:
+            print "ERROR: BAD DATA - fix your event attributes"
     print effect.message+"\n"
 
-def getNumber(menu, min, max):
+def getNumber(menu, min, max, dontInclude = []):
     isGood = True
     while True:
         clearScreen()
@@ -57,7 +79,7 @@ def getNumber(menu, min, max):
 
         if isGood:
             num = int(string)
-            if num >= min and num <= max:
+            if num >= min and num <= max and num not in dontInclude:
                 break
         isGood = False
     return num

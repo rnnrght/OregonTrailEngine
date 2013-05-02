@@ -6,10 +6,11 @@ class Character:
         self.isSick = False
 
 class Supply:
-    def __init__(self, name, rate):
+    def __init__(self, name, rate, unit):
         self.name = name
         self.rate = rate
         self.amount = 0
+        self.unit = unit
 
 class City:
     def __init__(self, name, distanceTo):
@@ -22,5 +23,5 @@ class Event:
 	self.description = description
 	self.options = options
 	self.chances = chances
-	self.goodEffects = goodEffects 
+	self.goodEffects = goodEffects
 	self.badEffects = badEffects

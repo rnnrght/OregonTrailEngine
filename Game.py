@@ -86,7 +86,7 @@ def getStatus():
     return string
 
 def travelLoop():
-    global currentCity, Supplies, baseEatRate, Characters, baseTravelRate, pace, meal, win
+    global currentCity, Supplies, baseEatRate, Characters, baseTravelRate, pace, meal, win, eventChance
     global mainCharacter, running, sickChance, healthForSickRoll, lostHealthSick, lostHealthNoMeal
     global lostHealthSmallMeal, lostHealthSkimpyMeal, lostHealthFastTravel, lostHealthGruelingTravel
     city = Cities[currentCity]
@@ -134,6 +134,12 @@ def travelLoop():
                     character.isSick = True
                     clearScreen()
                     raw_input(character.name + " has gotten sick!")
+
+        # HANDLE EVENTS
+        if city.distanceTo > 0:
+            if random.randint(1,100) <= eventChance:
+                clearScreen()
+                raw_input("EVENT OCCURED")
 
         # Check for character death
         i = 0
@@ -273,6 +279,8 @@ lostHealthSkimpyMeal = 3
 lostHealthFastTravel = 1
 lostHealthGruelingTravel = 3
 diseaseName = "dysentery"
+
+eventChance = 15
 
 distanceUnit = "miles"
 

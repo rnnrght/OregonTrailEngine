@@ -2,6 +2,7 @@
 
 from GameObjects import *
 import os
+import random
 
 ##### VARIOUS FUNCTIONS #####
 
@@ -37,31 +38,82 @@ def travelLoop():
     global currentCity
     global Supplies
     global baseEatRate
+    global Characters
     global baseTravelRate
     global pace
     global meal
+    global win
+    global mainCharacter
+    global running
     city = Cities[currentCity]
+
+    # Loop until city is reached
     while city.distanceTo > 0:
         displayStatus()
+        choice = raw_input("1. Continue\n2. Travel Options\n")
+        if choice == "2":
+            travelOptions()
+            continue
+
         if pace == "normal":
             travelRateFactor = 1.0
         elif pace == "fast":
             travelRateFactor = 1.25
+            for character in Characters:
+                character.health -= 2
         elif pace == "grueling":
             travelRateFactor = 1.5
+            for character in Characters:
+                character.health -= 5
 
-        if meal == "normal":
-            eatRateFactor = 1.0
-        elif meal == "small":
-            eatRateFactor = .75
-        elif meal == "skimpy":
-            eatRateFactor = 0.5
-
+        # Travel a little to the city
         city.distanceTo -= baseTravelRate * travelRateFactor
-        Supplies[0].amount -= baseEatRate * eatRateFactor * len(Characters)
-        choice = raw_input("1. Continue\n2. Travel Options\n")
-        if choice == "2":
-            travelOptions()
+
+        # Eat the supplies, or subtract health
+        if Supplies[0].amount != 0:
+            if meal == "normal":
+                eatRateFactor = 1.0
+            elif meal == "small":
+                eatRateFactor = .75
+                for character in Characters:
+                    character.health -= 2
+            elif meal == "skimpy":
+                eatRateFactor = 0.5
+                for character in Characters:
+                    character.health -= 5
+            Supplies[0].amount -= baseEatRate * eatRateFactor * len(Characters)
+        else:
+            for character in Characters:
+                character.health -= 8
+        if Supplies[0].amount < 0:
+            Supplies[0].amount = 0
+
+        # Handle sick character, and perfom sickness rolls
+        for character in Characters:
+            if character.isSick:
+                character.health -= 5
+            elif character.health < 50:
+                if random.randint(1,100) > 85:
+                    character.isSick = True
+                    clearScreen()
+                    raw_input(character.name + " has gotten sick!")
+
+        # Check for character death
+        i = 0
+        while i < len(Characters):
+            if Characters[i].health <= 0:
+                clearScreen()
+                raw_input(Characters[i].name + "has died!")
+                Characters.pop(i)
+                i -= 1
+            i += 1
+
+        # If main character died, game over
+        if len(Characters) == 0 or Characters[0] != mainCharacter:
+            running = False
+            win = False
+            return
+
     currentCity += 1
 
 def travelOptions():
@@ -124,6 +176,15 @@ startScreen = (
 "   Will you and your group of survivors last in their  \n"
 "                  journey for a cure?                  \n" )
 
+gameOver = (
+"                       GAME OVER                       \n"
+"Your entire crew now has a horrendous case of dysentery\n"
+"                      Way to go...                     \n" )
+
+winScreen = (
+"                   CONGRATULATIONS                     \n"
+"You have made it to your destination with great resolve\n"
+"    You have escaped from the clutches of dysentery      " )
 
 # Units that are travelled per travel cycle
 baseTravelRate = 100
@@ -142,6 +203,10 @@ currentCity = 0
 diseaseName = "dysentery"
 
 distanceUnit = "miles"
+
+running = True # NOT PARSEABLE
+
+win = True # NOT PARSEABLE
 
 # All of the supply types: first arg is name, second is number gatherable per hour
 Supplies.append(Supply("Food", 100))
@@ -182,15 +247,14 @@ clearScreen()
 # Input Character Names
 
 charName = raw_input("What is your main character's name?: ")
-char = Character(charName)
-Characters.append(char)
+mainCharacter = Character(charName)
+Characters.append(mainCharacter)
 for i in range(2, numCharacters+1):
     clearScreen()
     print "Character " + str(i) + ":"
     charName = raw_input("What is this character's name?: ")
     char = Character(charName)
     Characters.append(char)
-
 
 # Scavenge Time
 
@@ -224,9 +288,12 @@ while True:
 
 # Begin Adventure
 
-while currentCity < len(Cities):
+while running and currentCity < len(Cities):
     travelLoop()
 
 clearScreen()
 
-print "GAME OVER"
+if win:
+    print winScreen
+else:
+    print gameOver

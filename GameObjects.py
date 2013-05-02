@@ -17,9 +17,10 @@ class City:
         self.distanceTo = distanceTo
 
 class Effect:
-    def __init__(self, attribute, amount):
-	self.attribute = attrbute;
-	self.amount = amount;
+    def __init__(self, attribute, amount, message):
+	self.attribute = attrbute
+	self.amount = amount
+	self.message = message
 
 class Event:
     def __init__(self, name, decription, options, chances, goodEffects, badEffects):

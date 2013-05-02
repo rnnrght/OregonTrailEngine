@@ -41,7 +41,7 @@ def travelLoop():
     # Loop until city is reached
     while city.distanceTo > 0:
         displayStatus()
-        choice = raw_input("1. Continue\n2. Travel Options\n")
+        choice = raw_input("1. Continue\n2. Travel Options\nWhat will you do?: ")
         if choice == "2":
             travelOptions()
             continue
@@ -149,17 +149,21 @@ def healMember():
     print str(i+2) + ". Go Back"
 
     choice = input("What would you like to do?: ") - 1
-    if Supplies[3].amount == 0:
-        clearScreen()
-        raw_input("You do not have enough medicine!")
-        choice = len(Characters)
 
     if choice >= 0 and choice < len(Characters):
+        if Supplies[3].amount == 0:
+            clearScreen()
+            raw_input("You do not have enough medicine!")
+            return
         Characters[choice].isSick = False
         Characters[choice].health += 25
         if Characters[choice].health > 100:
             Characters[choice].health = 100
         Supplies[3].amount -= 1
+        healMember()
+    elif choice == len(Characters):
+        return
+    else:
         healMember()
 
 Characters = []
@@ -290,8 +294,8 @@ while True:
             break
         else:
             clearScreen()
-            print "You have spent to many hours scavenging"
-            raw_input("Please make sure that your number of hours left is >= 0")
+            print "You have spent to many hours scavenging!"
+            raw_input("Please make sure that you don't use more time than you have.")
     elif keyPressed >= 0 and keyPressed <= i:
         clearScreen()
         print "You have " + str(hoursToScavenge) + " hours to scavenge\n"

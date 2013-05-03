@@ -19,15 +19,15 @@ class City:
 
 class Effect:
     def __init__(self, attribute, amount, message):
-	self.attribute = attribute.split("/")
-	self.amount = amount.split("/")
-	self.message = message
+        self.attribute = attribute.split("/")
+        self.amount = [int(num) for num in amount.split("/")]
+        self.message = message
 
 class Event:
     def __init__(self, name, description, options, chances, goodEffects, badEffects):
         self.name = name #same as key
-	self.description = description #event message
-	self.options = options # array of options
-	self.chances = chances # array of % chance of sucess
-	self.goodEffects = goodEffects # array of good effects if success
-	self.badEffects = badEffects # array of bad effects if fail
+        self.description = description #event message
+        self.options = options#array of options
+        self.chances = chances#array of % chance of sucess
+        self.goodEffects = goodEffects #array of good effects if success
+        self.badEffects = badEffects #array of bad effects if fail

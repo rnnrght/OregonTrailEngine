@@ -11,24 +11,33 @@ def handleEvent(event):
     dontInclude = []
     toPrint = event.description + "\n" + "Do you...\n"
     i=0
+    badSupplies = {}
     for i, option in enumerate(event.options):
         canDo=True
         for goodAtt, goodAmt in zip(event.goodEffects[i].attribute,event.goodEffects[i].amount):
             for k, att in enumerate(("food","ammunition","money","meds")):
                 if goodAtt == att and goodAmt + Supplies[k].amount < 0:
-                    canDo=False
+                    canDo = False
+                    badSupplies[Supplies[k].name] = True
 
         if canDo:
             toPrint += str(i+1)+": "+option + "\n"
         else:
             dontInclude.append(i+1)
-            toPrint += str(i+1)+": Cannot choose, not enough supplies.\n"
+            toPrint += str(i+1)+": Cannot choose, not enough "
+            includeComma = False
+            for supplyName in badSupplies:
+                if includeComma:
+                    toPrint += ", "
+                includeComma = True
+                toPrint += supplyName
+            toPrint += "\n"
 
-    choice = getNumber(toPrint + "Enter your choice: ",1,i+1, dontInclude) -1
-    x = random.randint(1,100)
+    choice = getNumber(toPrint + "Enter your choice: ", 1, i+1, dontInclude) - 1
+    x = random.randint(1, 100)
     chance = 0.0
     for i in range(len(Characters)):
-        chance+= (1-chance) * event.chances[choice]/100.0
+        chance+= (1-chance) * event.chances[choice] / 100.0
     if x <= chance * 100.0:
         castEffect(event.goodEffects[choice])
     else:
@@ -66,7 +75,7 @@ def castEffect(effect):
                 if len(healthyChars)>0:
                     char = random.choice(healthyChars)
                     char.isSick=True
-                    returnStuff.append(char.name + " has caught dysentery!\n")
+                    returnStuff.append(char.name + " has caught " + diseaseName + "!\n")
         elif att == "nothing" or supplyEffected:
             pass
         else:

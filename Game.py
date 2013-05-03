@@ -279,11 +279,6 @@ Supplies = []
 Cities = []
 # Each city has a name, distance to next city
 
-Events = []
-
-# Each Event has a name, probibility, and factors that effect the game
-
-
 ##### VARIABLES TO PARSE #####
 
 datfiles = Parser()

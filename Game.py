@@ -245,13 +245,12 @@ def travelOptions():
     travelOptions()
 
 def healMember():
-    global Characters
-    global Supplies
+    global Characters, Supplies
     clearScreen()
-    string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + " medicine\n\n"
+    string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + ' ' + Supplies[3].unit + "\n\n"
 
     for i, character in enumerate(Characters):
-        string += str(i+1) + ". Heal" + character.name + ": \n"
+        string += str(i+1) + ". Heal " + character.name + ": \n"
         string += "- Health: " + str(character.health) + '\n'
         if character.isSick:
             string += "- Has " + diseaseName + '\n'
@@ -301,21 +300,11 @@ Events = []
 
 datfiles = Parser()
 
-startScreen = (
-"                    DYSENTERY TRAIL                    \n"
-"In the year 20XX, the world succumbed to its poor diet.\n"
-"   Will you and your group of survivors last in their  \n"
-"                  journey for a cure?                  \n" )
+startScreen = datfiles.getMessage("startScreen")
 
-gameOver = (
-"                       GAME OVER                       \n"
-"Your entire crew now has a horrendous case of dysentery\n"
-"                      Way to go...                     \n" )
+gameOver = datfiles.getMessage("gameOver")
 
-winScreen = (
-"                   CONGRATULATIONS                     \n"
-"You have made it to your destination with great resolve\n"
-"    You have escaped from the clutches of dysentery      " )
+winScreen = datfiles.getMessage("winScreen")
 
 # Units that are travelled per travel cycle
 baseTravelRate = int(datfiles.get("baseTravelRate"))
@@ -410,7 +399,7 @@ while True:
         unit = Supplies[keyPressed].unit
         time = hoursToScavenge + amount / rate
         string = "You have " + str(time) + " hours to scavenge\n\n"
-        string += "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per houri\n"
+        string += "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per hour\n"
         string += "How many hours will you spend scavenging " + supplyName + "?: "
         hours = getNumber(string, 0, time)
         hoursBefore = Supplies[keyPressed].amount / Supplies[keyPressed].rate
@@ -421,6 +410,10 @@ while True:
 
 while running and currentCity < len(Cities):
     travelLoop()
+
+    # City event
+    if currentCity != len(Cities):
+        pass
 
 clearScreen()
 

@@ -86,7 +86,7 @@ class Parser:
 
 			newEvent = Event(newEventName, newEventDescription, newEventOptions, newEventChances, newEventGoodEffects, newEventBadEffects)
 			self.eventDefs[newEventName] = newEvent
-		
+
 		data.close()
 
 		#Parse in cities.
@@ -112,11 +112,11 @@ class Parser:
 
 		data.close()
 
-	
+
 
 	def allAttributes(self):
 		return self.gameParams
-	
+
 	def get(self, paramName):
 		try:
 			return self.gameParams[paramName]

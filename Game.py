@@ -45,24 +45,30 @@ def handleEvent(event):
 
 def castEffect(effect):
     returnStuff = []
+    doEvent=False
     for att, amt in zip(effect.attribute,effect.amount):
         supplyEffected=False
         for j, checkAtt in enumerate(("food", "ammunition", "money", "meds")):
             if att == checkAtt:
                 Supplies[j].amount+=amt
+                if amt>0:
+                    returnStuff.append("Gained "+str(amt)+" "+checkAtt+".\n")
+                else:
+                    returnStuff.append("Lost "+str(amt*-1)+" "+checkAtt+".\n")
                 if Supplies[j].amount<0:
                     Supplies[j].amount=0
                     returnStuff.append("Ran out of " + checkAtt + "!\n")
                 supplyEffected=True
         if att == "health":
             if amt > 0:
-                notFullChars = [character for character in Characters if character.health != 100]
+                notFullChars = [character for character in Characters if character.health != 100 and character.health>0]
                 char = random.choice(notFullChars)
                 returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
             else:
-                char = random.choice(Characters)
+                notDeadChars = [character for character in Characters if character.health >0]
+                char = random.choice(notDeadChars)
+                returnStuff.append(char.name + " has lost " + str(amt*-1) + " health.\n")
             char.health+=amt
-            returnStuff.append(char.name + " has lost " + str(amt) + " health.\n")
         elif att == "sick":
             if amt == 0:
                 sickChars = [character for character in Characters if character.isSick]
@@ -76,6 +82,8 @@ def castEffect(effect):
                     char = random.choice(healthyChars)
                     char.isSick=True
                     returnStuff.append(char.name + " has caught " + diseaseName + "!\n")
+        elif att in [event for event in Events]:
+            doEvent=True
         elif att == "nothing" or supplyEffected:
             pass
         else:
@@ -84,6 +92,9 @@ def castEffect(effect):
     print effect.message
     print ''.join(returnStuff)
     raw_input()
+    #check for chained/tree events
+    if doEvent:
+        handleEvent(Events[att])
 
 def getNumber(menu, min, max, dontInclude = []):
     isGood = True
@@ -351,7 +362,7 @@ Supplies.append(Supply(moneyName, moneyRate, moneyUnit))
 Supplies.append(Supply(medicineName, medicineRate, medicineUnit))
 
 Cities = datfiles.getCities()
-
+Events = datfiles.getEventDefs()
 meal = ("normal", 1.0) # NOT PARSEABLE
 pace = ("normal", 1.0) # NOT PARSEABLE
 running = True # NOT PARSEABLE

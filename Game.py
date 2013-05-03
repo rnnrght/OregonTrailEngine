@@ -10,18 +10,14 @@ def handleEvent(event):
     clearScreen()
     dontInclude = []
     toPrint = event.description + "\n" + "Do you...\n"
+    i=0
     for i, option in enumerate(event.options):
         canDo=True
-        for goodEffect, badEffect in zip(event.goodEffects, event.badEffects):
-            goodAtt=goodEffect.attribute
-            goodAmt=goodEffect.amount
-            badAtt=badEffect.attribute
-            badAmt=badEffect.amount
-            for j, att in enumerate(("food","ammunition","money","meds")):
-                if goodAtt == att and goodAmt + Supplies[j].amount < 0:
+        for goodAtt, goodAmt in zip(event.goodEffects[i].attribute,event.goodEffects[i].amount):
+            for k, att in enumerate(("food","ammunition","money","meds")):
+                if goodAtt == att and goodAmt + Supplies[k].amount < 0:
                     canDo=False
-                elif badAtt == att and badAmt + Supplies[j].amount < 0:
-                    canDo=False
+
         if canDo:
             toPrint += str(i+1)+": "+option + "\n"
         else:

@@ -148,6 +148,10 @@ class Parser:
 	def getEvent(self):
 		return self.eventDefs[random.choice(self.eventDefs.keys())]
 
+	def getTypeEvent(self, typechar)
+		candidates = [key for key in self.eventDefs.keys if key.startswith(typechar)]
+		return self.eventDefs[random.choice(candidates)]
+
 	def getCities(self):
 		return self.cities
 	

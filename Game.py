@@ -233,8 +233,7 @@ def travelOptions():
     travelOptions()
 
 def healMember():
-    global Characters
-    global Supplies
+    global Characters, Supplies
     clearScreen()
     string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + ' ' + Supplies[3].unit + "\n\n"
 

@@ -10,9 +10,9 @@ if len(sys.argv) == 2:
 
     fileModify = re.sub("\t", "    ", fileRead)
 
-    fileWrite = open(sys.argv[1], 'w')
+    fileWrite = open(fileName, 'w')
 
-    fileWrite.write(fileRead)
+    fileWrite.write(fileModify)
 
     fileWrite.close()
 else:

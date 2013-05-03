@@ -86,7 +86,7 @@ class Parser:
 
 			newEvent = Event(newEventName, newEventDescription, newEventOptions, newEventChances, newEventGoodEffects, newEventBadEffects)
 			self.eventDefs[newEventName] = newEvent
-		
+
 		data.close()
 
 		#Parse in cities.
@@ -116,12 +116,12 @@ class Parser:
 		#Each message is defined by:
 		#A "name" for the message, followed by a tilde and a new line.
 		#Then, the full text of the message, followed by a tilde.
-		self.messages = {} 
+		self.messages = {}
 		data = open("Messages.dat", "r").read()
 		data = data.split("~")
 		data = [item.strip('\n') for item in data]
 		rawMessages = [item for item in data if item != ""]
-		
+
 		i = 0
 		while i < len(rawMessages):
 			try:
@@ -130,11 +130,11 @@ class Parser:
 				print "Problem reading messages. Dump: "
 				print rawMessages
 			i = i+2
-	
+
 
 	def allAttributes(self):
 		return self.gameParams
-	
+
 	def get(self, paramName):
 		try:
 			return self.gameParams[paramName]
@@ -142,19 +142,19 @@ class Parser:
 			print "WARNING: REQUEST MADE FOR NON-EXISTENT PARAMETER \"", paramName, '"'
 			return ""
 
-	def getEventDefs(self):
-		return self.eventDefs
+    def getEventDefs(self):
+        return self.eventDefs
 
-	def getEvent(self):
-		return self.eventDefs[random.choice(self.eventDefs.keys())]
+    def getEvent(self):
+        return self.eventDefs[random.choice(self.eventDefs.keys())]
 
-	def getTypeEvent(self, typechar)
-		candidates = [key for key in self.eventDefs.keys if key.startswith(typechar)]
-		return self.eventDefs[random.choice(candidates)]
+    def getTypeEvent(self, typechar):
+        candidates = [key for key in self.eventDefs.keys if key.startswith(typechar)]
+        return self.eventDefs[random.choice(candidates)]
 
 	def getCities(self):
 		return self.cities
-	
+
 	def getMessages(self):
 		return self.messages
 

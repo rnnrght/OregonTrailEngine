@@ -210,7 +210,7 @@ def travelLoop():
         while i < len(Characters):
             if Characters[i].health <= 0:
                 clearScreen()
-                raw_input(Characters[i].name + "has died!")
+                raw_input(Characters[i].name + " has died!")
                 Characters.pop(i)
                 i -= 1
             i += 1

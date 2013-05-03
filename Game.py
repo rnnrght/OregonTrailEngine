@@ -33,7 +33,6 @@ def handleEvent(event):
     chance = 0.0
     for i in range(len(Characters)):
         chance+= (1-chance) * event.chances[choice]/100.0
-    raw_input("DEBUG: " + str(chance))
     if x <= chance * 100.0:
         castEffect(event.goodEffects[choice])
     else:
@@ -68,6 +67,7 @@ def castEffect(effect):
             pass
         else:
             print "ERROR: BAD DATA - fix your event attributes"
+    clearScreen()
     raw_input(effect.message+"\n")
 
 def getNumber(menu, min, max, dontInclude = []):

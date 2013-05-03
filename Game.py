@@ -96,8 +96,7 @@ def castEffect(effect):
                 print "ERROR: BAD DATA - fix your event attributes"
         clearScreen()
     print effect.message
-    print ''.join(returnStuff)
-    raw_input()
+    raw_input(''.join(returnStuff))
     #check for chained/tree events
     if doEvent:
         handleEvent(Events[att])

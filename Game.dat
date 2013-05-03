@@ -25,3 +25,6 @@ foodUnit:pounds
 ammunitionUnit:rounds
 moneyUnit:dollars
 medicineUnit:medkits
+healthPerHeal:25
+chanceToCure:75
+chanceToHeal:75

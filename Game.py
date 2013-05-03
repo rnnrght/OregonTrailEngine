@@ -250,7 +250,7 @@ def travelOptions():
     travelOptions()
 
 def healMember():
-    global Characters, Supplies
+    global Characters, Supplies, healthPerHeal, chanceToCure, chanceToHeal
     clearScreen()
     string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + ' ' + Supplies[3].unit + "\n\n"
 
@@ -270,8 +270,19 @@ def healMember():
             clearScreen()
             raw_input("You do not have enough " + Supplies[3].unit + "!")
             return
-        Characters[choice].isSick = False
-        Characters[choice].health += 25
+
+        if Characters[choice].isSick:
+            if random.randint(1,100) <= chanceToCure:
+                Characters[choice].isSick = False
+            else:
+                clearScreen()
+                raw_input("Heal failure!")
+        else:
+            if random.randint(1,100) <= chanceToHeal:
+                Characters[choice].health += 25
+            else:
+                clearScreen()
+                raw_input("Heal failure!")
         if Characters[choice].health > 100:
             Characters[choice].health = 100
         Supplies[3].amount -= 1
@@ -315,6 +326,10 @@ baseEatRate = int(datfiles.get("baseEatRate"))
 hoursToScavenge = int(datfiles.get("hoursToScavenge"))
 
 numCharacters = int(datfiles.get("numCharacters"))
+
+chanceToCure = int(datfiles.get("chanceToCure"))
+chanceToHeal = int(datfiles.get("chanceToHeal"))
+healthPerHeal = int(datfiles.get("healthPerHeal"))
 
 
 sickChance = int(datfiles.get("sickChance"))
@@ -410,9 +425,8 @@ while True:
 
 while running and currentCity < len(Cities):
     travelLoop()
-
     # City event
-    if currentCity != len(Cities):
+    if running and currentCity != len(Cities):
         clearScreen()
         raw_input("You have arrived at "+Cities[currentCity-1].name+".")
         event = datfiles.getTypeEvent("C")

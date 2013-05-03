@@ -38,22 +38,22 @@ def castEffect(effect):
     returnStuff = []
     for att, amt in zip(effect.attribute,effect.amount):
         supplyEffected=False
-        for j, checkAtt in enumerate(("food","ammunition","money","meds")):
+        for j, checkAtt in enumerate(("food", "ammunition", "money", "meds")):
             if att == checkAtt:
                 Supplies[j].amount+=amt
                 if Supplies[j].amount<0:
                     Supplies[j].amount=0
-                    returnStuff.append("Ran out of "+checkAtt+"!\n")
+                    returnStuff.append("Ran out of " + checkAtt + "!\n")
                 supplyEffected=True
         if att == "health":
             if amt > 0:
                 notFullChars = [character for character in Characters if character.health != 100]
                 char = random.choice(notFullChars)
-                returnStuff.append(char+ "has gained "+str(amt)+" health.")
+                returnStuff.append(char.name + "has gained " + str(amt) + " health.")
             else:
                 char = random.choice(Characters)
             char.health+=amt
-            returnStuff.append(char+ "has lost "+str(amt)+" health.")
+            returnStuff.append(char.name + "has lost " + str(amt) + " health.")
         elif att == "sick":
             if amt == 0:
                 sickChars = [character for character in Characters if character.isSick]

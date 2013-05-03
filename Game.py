@@ -9,9 +9,14 @@ from Parser import *
 def handleEvent(event):
     clearScreen()
     dontInclude = []
-    toPrint = event.description + "\n" + "Do you...\n"
+    toPrint = "Supplies:\n"
+    for supply in Supplies:
+        toPrint += supply.name + ": " + str(supply.amount) + " " + supply.unit + '\n'
+
+    toPrint += "\n"+event.description + "\nDo you...\n"
     i=0
     badSupplies = {}
+
     for i, option in enumerate(event.options):
         canDo=True
         for goodAtt, goodAmt in zip(event.goodEffects[i].attribute,event.goodEffects[i].amount):
@@ -59,36 +64,37 @@ def castEffect(effect):
                     Supplies[j].amount=0
                     returnStuff.append("Ran out of " + checkAtt + "!\n")
                 supplyEffected=True
-        if att == "health":
-            if amt > 0:
-                notFullChars = [character for character in Characters if character.health != 100 and character.health>0]
-                char = random.choice(notFullChars)
-                returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
-            else:
-                notDeadChars = [character for character in Characters if character.health >0]
-                char = random.choice(notDeadChars)
-                returnStuff.append(char.name + " has lost " + str(amt*-1) + " health.\n")
-            char.health+=amt
-        elif att == "sick":
-            if amt == 0:
-                sickChars = [character for character in Characters if character.isSick]
-                if len(sickChars)>0:
-                    char = random.choice(sickChars)
-                    char.isSick=False
-                    returnStuff.append(char.name + " has been cured!\n")
-            else:
-                healthyChars = [character for character in Characters if not character.isSick]
-                if len(healthyChars)>0:
-                    char = random.choice(healthyChars)
-                    char.isSick=True
-                    returnStuff.append(char.name + " has caught " + diseaseName + "!\n")
-        elif att in [event for event in Events]:
+        if att in [event for event in Events]:
             doEvent=True
-        elif att == "nothing" or supplyEffected:
-            pass
         else:
-            print "ERROR: BAD DATA - fix your event attributes"
-    clearScreen()
+            if att == "health":
+                if amt > 0:
+                    notFullChars = [character for character in Characters if character.health != 100 and character.health>0]
+                    char = random.choice(notFullChars)
+                    returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
+                else:
+                    notDeadChars = [character for character in Characters if character.health >0]
+                    char = random.choice(notDeadChars)
+                    returnStuff.append(char.name + " has lost " + str(amt*-1) + " health.\n")
+                char.health+=amt
+            elif att == "sick":
+                if amt == 0:
+                    sickChars = [character for character in Characters if character.isSick]
+                    if len(sickChars)>0:
+                        char = random.choice(sickChars)
+                        char.isSick=False
+                        returnStuff.append(char.name + " has been cured!\n")
+                else:
+                    healthyChars = [character for character in Characters if not character.isSick]
+                    if len(healthyChars)>0:
+                        char = random.choice(healthyChars)
+                        char.isSick=True
+                        returnStuff.append(char.name + " has caught " + diseaseName + "!\n")
+            elif att == "nothing" or supplyEffected:
+                pass
+            else:
+                print "ERROR: BAD DATA - fix your event attributes"
+        clearScreen()
     print effect.message
     print ''.join(returnStuff)
     raw_input()
@@ -197,7 +203,7 @@ def travelLoop():
             if random.randint(1,100) <= eventChance:
                 clearScreen()
                 raw_input("EVENT OCCURED!")
-                event = datfiles.getEvent()
+                event = datfiles.getTypeEvent("R")
                 handleEvent(event)
 
         # Check for character death

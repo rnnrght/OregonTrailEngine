@@ -18,9 +18,9 @@ def handleEvent(event):
             badAtt=badEffect.attribute
             badAmt=badEffect.amount
             for j, att in enumerate(("food","ammunition","money","meds")):
-                if goodAtt == att and goodAmt + Supplies[j].amount < 0:
+                if goodAtt == att and goodAmt + Supplies[j] < 0:
                     canDo=False
-                elif badAtt == att and badAmt + Supplies[j].amount < 0:
+                elif badAtt == att and badAmt + Supllies[j] < 0:
                     canDo=False
         if canDo:
             toPrint += str(i+1)+": "+option + "\n"
@@ -30,10 +30,7 @@ def handleEvent(event):
 
     choice = getNumber(toPrint + "Enter your choice: ",1,i+1, dontInclude) -1
     x = random.randint(1,100)
-    chance = 0.0
-    for i in range(len(Characters)):
-        chance+= (1-chance) * event.chances[choice]/100.0
-    if x <= chance * 100.0:
+    if x <= len(Characters)*event.chances[choice]:
         castEffect(event.goodEffects[choice])
     else:
         castEffect(event.badEffects[choice])
@@ -43,7 +40,7 @@ def castEffect(effect):
         supplyEffected=False
         for j, checkAtt in enumerate(("food","ammunition","money","meds")):
             if att == checkAtt:
-                Supplies[j].amount+=amt
+                Supplies[j]+=amt
                 supplyEffected=True
         if att == "health":
             if amt > 0:
@@ -63,12 +60,11 @@ def castEffect(effect):
                 if len(healthyChars)>0:
                     char = random.choice(healthyChars)
                     char.isSick=True
-        elif att == "nothing" or supplyEffected:
+        elif att == "nothing" or supplyEffect:
             pass
         else:
             print "ERROR: BAD DATA - fix your event attributes"
-    clearScreen()
-    raw_input(effect.message+"\n")
+    print effect.message+"\n"
 
 def getNumber(menu, min, max, dontInclude = []):
     isGood = True
@@ -395,10 +391,6 @@ while True:
 
 while running and currentCity < len(Cities):
     travelLoop()
-
-    # City event
-    if currentCity != len(Cities):
-        pass
 
 clearScreen()
 

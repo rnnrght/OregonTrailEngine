@@ -16,7 +16,7 @@ class Parser:
         self.gameParams = {}
         for line in data:
             line = line.strip()
-            if line == "":     #skipping blank lines like this
+            if line == "":	 #skipping blank lines like this
                 continue #lets us keep the data file more readable
 
             attribute = line.split(":")
@@ -131,7 +131,6 @@ class Parser:
                 print rawMessages
             i = i+2
 
-
     def allAttributes(self):
         return self.gameParams
 
@@ -149,7 +148,7 @@ class Parser:
         return self.eventDefs[random.choice(self.eventDefs.keys())]
 
     def getTypeEvent(self, typechar):
-        candidates = [key for key in self.eventDefs.keys if key.startswith(typechar)]
+        candidates = [key for key in self.eventDefs.keys() if key.startswith(typechar)]
         return self.eventDefs[random.choice(candidates)]
 
     def getCities(self):

@@ -4,14 +4,14 @@ from GameObjects import City
 import random
 
 class Parser:
-	def __init__(self):
+    def __init__(self):
 
-		#Parse in basic game parameters
-			#Each game parameter is on its own line.
-			#Each line has the name of the attribute, then a colon, then the value.
-			#For example:
-				#partsRescName:flux capacitors
-			#defines an attribute called "partsRescName" with the value "flux capacitors"
+        #Parse in basic game parameters
+            #Each game parameter is on its own line.
+            #Each line has the name of the attribute, then a colon, then the value.
+            #For example:
+                #partsRescName:flux capacitors
+            #defines an attribute called "partsRescName" with the value "flux capacitors"
 		data = open("Game.dat", "r")
 		self.gameParams = {}
 		for line in data:
@@ -86,7 +86,7 @@ class Parser:
 
 			newEvent = Event(newEventName, newEventDescription, newEventOptions, newEventChances, newEventGoodEffects, newEventBadEffects)
 			self.eventDefs[newEventName] = newEvent
-		
+
 		data.close()
 
 		#Parse in cities.
@@ -116,12 +116,12 @@ class Parser:
 		#Each message is defined by:
 		#A "name" for the message, followed by a tilde and a new line.
 		#Then, the full text of the message, followed by a tilde.
-		self.messages = {} 
+		self.messages = {}
 		data = open("Messages.dat", "r").read()
 		data = data.split("~")
 		data = [item.strip('\n') for item in data]
 		rawMessages = [item for item in data if item != ""]
-		
+
 		i = 0
 		while i < len(rawMessages):
 			try:
@@ -130,11 +130,11 @@ class Parser:
 				print "Problem reading messages. Dump: "
 				print rawMessages
 			i = i+2
-	
 
-	def allAttributes(self):
-		return self.gameParams
-	
+
+    def allAttributes(self):
+        return self.gameParams
+
 	def get(self, paramName):
 		try:
 			return self.gameParams[paramName]
@@ -150,7 +150,7 @@ class Parser:
 
 	def getCities(self):
 		return self.cities
-	
+
 	def getMessages(self):
 		return self.messages
 

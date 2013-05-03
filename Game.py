@@ -418,7 +418,7 @@ while running and currentCity < len(Cities):
     travelLoop()
 
     # City event
-    if currentCity != len(Cities):
+    if running and currentCity != len(Cities):
         clearScreen()
         raw_input("You have arrived at "+Cities[currentCity-1].name+".")
         event = datfiles.getTypeEvent("C")

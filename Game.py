@@ -10,65 +10,79 @@ def handleEvent(event):
     clearScreen()
     dontInclude = []
     toPrint = event.description + "\n" + "Do you...\n"
+    i=0
+    badSupplies = {}
     for i, option in enumerate(event.options):
         canDo=True
-        for goodEffect, badEffect in zip(event.goodEffects, event.badEffects):
-            goodAtt=goodEffect.attribute
-            goodAmt=goodEffect.amount
-            badAtt=badEffect.attribute
-            badAmt=badEffect.amount
-            for j, att in enumerate(("food","ammunition","money","meds")):
-                if goodAtt == att and goodAmt + Supplies[j].amount < 0:
-                    canDo=False
-                elif badAtt == att and badAmt + Supplies[j].amount < 0:
-                    canDo=False
+        for goodAtt, goodAmt in zip(event.goodEffects[i].attribute,event.goodEffects[i].amount):
+            for k, att in enumerate(("food","ammunition","money","meds")):
+                if goodAtt == att and goodAmt + Supplies[k].amount < 0:
+                    canDo = False
+                    badSupplies[Supplies[k].name] = True
+
         if canDo:
             toPrint += str(i+1)+": "+option + "\n"
         else:
             dontInclude.append(i+1)
-            toPrint += str(i+1)+": Cannot choose, not enough supplies.\n"
+            toPrint += str(i+1)+": Cannot choose, not enough "
+            includeComma = False
+            for supplyName in badSupplies:
+                if includeComma:
+                    toPrint += ", "
+                includeComma = True
+                toPrint += supplyName
+            toPrint += "\n"
 
-    choice = getNumber(toPrint + "Enter your choice: ",1,i+1, dontInclude) -1
-    x = random.randint(1,100)
+    choice = getNumber(toPrint + "Enter your choice: ", 1, i+1, dontInclude) - 1
+    x = random.randint(1, 100)
     chance = 0.0
     for i in range(len(Characters)):
-        chance+= (1-chance) * event.chances[choice]/100.0
+        chance+= (1-chance) * event.chances[choice] / 100.0
     if x <= chance * 100.0:
         castEffect(event.goodEffects[choice])
     else:
         castEffect(event.badEffects[choice])
 
 def castEffect(effect):
+    returnStuff = []
     for att, amt in zip(effect.attribute,effect.amount):
         supplyEffected=False
-        for j, checkAtt in enumerate(("food","ammunition","money","meds")):
+        for j, checkAtt in enumerate(("food", "ammunition", "money", "meds")):
             if att == checkAtt:
                 Supplies[j].amount+=amt
+                if Supplies[j].amount<0:
+                    Supplies[j].amount=0
+                    returnStuff.append("Ran out of " + checkAtt + "!\n")
                 supplyEffected=True
         if att == "health":
             if amt > 0:
                 notFullChars = [character for character in Characters if character.health != 100]
                 char = random.choice(notFullChars)
+                returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
             else:
                 char = random.choice(Characters)
             char.health+=amt
+            returnStuff.append(char.name + " has lost " + str(amt) + " health.\n")
         elif att == "sick":
             if amt == 0:
                 sickChars = [character for character in Characters if character.isSick]
                 if len(sickChars)>0:
                     char = random.choice(sickChars)
                     char.isSick=False
+                    returnStuff.append(char.name + " has been cured!\n")
             else:
                 healthyChars = [character for character in Characters if not character.isSick]
                 if len(healthyChars)>0:
                     char = random.choice(healthyChars)
                     char.isSick=True
+                    returnStuff.append(char.name + " has caught " + diseaseName + "!\n")
         elif att == "nothing" or supplyEffected:
             pass
         else:
             print "ERROR: BAD DATA - fix your event attributes"
     clearScreen()
-    raw_input(effect.message+"\n")
+    print effect.message
+    raw_input(''.join(returnStuff))
 
 def getNumber(menu, min, max, dontInclude = []):
     isGood = True
@@ -219,13 +233,12 @@ def travelOptions():
     travelOptions()
 
 def healMember():
-    global Characters
-    global Supplies
+    global Characters, Supplies
     clearScreen()
-    string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + " medicine\n\n"
+    string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + ' ' + Supplies[3].unit + "\n\n"
 
     for i, character in enumerate(Characters):
-        string += str(i+1) + ". Heal" + character.name + ": \n"
+        string += str(i+1) + ". Heal " + character.name + ": \n"
         string += "- Health: " + str(character.health) + '\n'
         if character.isSick:
             string += "- Has " + diseaseName + '\n'
@@ -374,7 +387,7 @@ while True:
         unit = Supplies[keyPressed].unit
         time = hoursToScavenge + amount / rate
         string = "You have " + str(time) + " hours to scavenge\n\n"
-        string += "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per houri\n"
+        string += "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per hour\n"
         string += "How many hours will you spend scavenging " + supplyName + "?: "
         hours = getNumber(string, 0, time)
         hoursBefore = Supplies[keyPressed].amount / Supplies[keyPressed].rate
@@ -385,6 +398,10 @@ while True:
 
 while running and currentCity < len(Cities):
     travelLoop()
+
+    # City event
+    if currentCity != len(Cities):
+        pass
 
 clearScreen()
 

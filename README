@@ -1,0 +1,6 @@
+Game.py is a general purpose Oregon Trail game engine. Many of the parameters in a standard Oregon
+Tail game are read in from .dat files instead of being hard-coded into the game engine. This allows
+users to create their own adventures with varying themes, events, and actions. Included are the
+.dat files for a default adventure that we have already developed for you.
+
+To run the game simply run Game.py

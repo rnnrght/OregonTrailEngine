@@ -112,6 +112,24 @@ class Parser:
 
 		data.close()
 
+		#Parse in messages.
+		#Each message is defined by:
+		#A "name" for the message, followed by a tilde and a new line.
+		#Then, the full text of the message, followed by a tilde.
+		self.messages = {} 
+		data = open("Messages.dat", "r").read()
+		data = data.split("~")
+		data = [item.strip('\n') for item in data]
+		rawMessages = [item for item in data if item != ""]
+		
+		i = 0
+		while i < len(rawMessages):
+			try:
+				self.messages[rawMessages[i].strip()] = rawMessages[i+1]
+			except IndexError:
+				print "Problem reading messages. Dump: "
+				print rawMessages
+			i = i+2
 	
 
 	def allAttributes(self):
@@ -121,7 +139,7 @@ class Parser:
 		try:
 			return self.gameParams[paramName]
 		except KeyError:
-			print "WARNING: REQUEST MADE FOR NON-EXISTENT PARAMETER \"", paramName
+			print "WARNING: REQUEST MADE FOR NON-EXISTENT PARAMETER \"", paramName, '"'
 			return ""
 
 	def getEventDefs(self):
@@ -132,6 +150,16 @@ class Parser:
 
 	def getCities(self):
 		return self.cities
+	
+	def getMessages(self):
+		return self.messages
+
+	def getMessage(self, key):
+		try:
+			return self.messages[key]
+		except KeyError:
+			print "WARNING: REQUEST MADE FOR NON-EXISTENT MESSAGE KEY \"", key, '"'
+			return ""
 
 if __name__ == '__main__' : #run this file directly for a quick self-test
 	print "Parser self-test:"
@@ -141,7 +169,7 @@ if __name__ == '__main__' : #run this file directly for a quick self-test
 	print "- printing attributes dictionary:"
 	print parser.allAttributes()
 
-	print "\n\n"
+	print "\n"
 	print "- printing results of get(\"ammoRescName\")"
 	print parser.get("ammoRescName")
 	print "- printing results of get(\"garbage\")"
@@ -157,3 +185,6 @@ if __name__ == '__main__' : #run this file directly for a quick self-test
 	for city in parser.getCities():
 		print city.name
 		print city.distanceTo
+
+	print "- dumping message dictionary"
+	print parser.getMessages()

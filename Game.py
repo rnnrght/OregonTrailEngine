@@ -96,8 +96,7 @@ def castEffect(effect):
                 print "ERROR: BAD DATA - fix your event attributes"
         clearScreen()
     print effect.message
-    print ''.join(returnStuff)
-    raw_input()
+    raw_input(''.join(returnStuff))
     #check for chained/tree events
     if doEvent:
         handleEvent(Events[att])
@@ -414,9 +413,10 @@ while running and currentCity < len(Cities):
 
     # City event
     if currentCity != len(Cities):
-        pass
-        #event = datfiles.getTypeEvent("C")
-        #handleEvent(event)
+        clearScreen()
+        raw_input("You have arrived at "+Cities[currentCity-1].name+".")
+        event = datfiles.getTypeEvent("C")
+        handleEvent(event)
 
 clearScreen()
 

@@ -82,8 +82,7 @@ def castEffect(effect):
             print "ERROR: BAD DATA - fix your event attributes"
     clearScreen()
     print effect.message
-    print ''.join(returnStuff)
-    raw_input()
+    raw_input(''.join(returnStuff))
 
 def getNumber(menu, min, max, dontInclude = []):
     isGood = True
@@ -237,7 +236,7 @@ def healMember():
     global Characters
     global Supplies
     clearScreen()
-    string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + " medicine\n\n"
+    string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + ' ' + Supplies[3].unit + "\n\n"
 
     for i, character in enumerate(Characters):
         string += str(i+1) + ". Heal " + character.name + ": \n"
@@ -399,7 +398,7 @@ while True:
         unit = Supplies[keyPressed].unit
         time = hoursToScavenge + amount / rate
         string = "You have " + str(time) + " hours to scavenge\n\n"
-        string += "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per houri\n"
+        string += "You can scavenge " + supplyName + " at a rate of " + str(rate) + " " + unit + " per hour\n"
         string += "How many hours will you spend scavenging " + supplyName + "?: "
         hours = getNumber(string, 0, time)
         hoursBefore = Supplies[keyPressed].amount / Supplies[keyPressed].rate

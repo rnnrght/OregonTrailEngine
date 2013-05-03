@@ -275,21 +275,11 @@ Events = []
 
 datfiles = Parser()
 
-startScreen = (
-"                    DYSENTERY TRAIL                    \n"
-"In the year 20XX, the world succumbed to its poor diet.\n"
-"   Will you and your group of survivors last in their  \n"
-"                  journey for a cure?                  \n" )
+startScreen = datfiles.getMessage("startScreen")
 
-gameOver = (
-"                       GAME OVER                       \n"
-"Your entire crew now has a horrendous case of dysentery\n"
-"                      Way to go...                     \n" )
+gameOver = datfiles.getMessage("gameOver")
 
-winScreen = (
-"                   CONGRATULATIONS                     \n"
-"You have made it to your destination with great resolve\n"
-"    You have escaped from the clutches of dysentery      " )
+winScreen = datfiles.getMessage("winScreen")
 
 # Units that are travelled per travel cycle
 baseTravelRate = int(datfiles.get("baseTravelRate"))

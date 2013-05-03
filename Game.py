@@ -419,7 +419,10 @@ while running and currentCity < len(Cities):
 
     # City event
     if currentCity != len(Cities):
-        pass
+        clearScreen()
+        raw_input("You have arrived at "+Cities[currentCity-1].name+".")
+        event = datfiles.getTypeEvent("C")
+        handleEvent(event)
 
 clearScreen()
 

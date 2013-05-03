@@ -35,36 +35,46 @@ def handleEvent(event):
         castEffect(event.badEffects[choice])
 
 def castEffect(effect):
+    returnStuff = []
     for att, amt in zip(effect.attribute,effect.amount):
         supplyEffected=False
         for j, checkAtt in enumerate(("food","ammunition","money","meds")):
             if att == checkAtt:
                 Supplies[j].amount+=amt
+                if Supplies[j].amount<0:
+                    Supplies[j].amount=0
+                    returnStuff.append("Ran out of "+checkAtt+"!\n")
                 supplyEffected=True
         if att == "health":
             if amt > 0:
                 notFullChars = [character for character in Characters if character.health != 100]
                 char = random.choice(notFullChars)
+                returnStuff.append(char+ "has gained "+str(amt)+" health.")
             else:
                 char = random.choice(Characters)
             char.health+=amt
+            returnStuff.append(char+ "has lost "+str(amt)+" health.")
         elif att == "sick":
             if amt == 0:
                 sickChars = [character for character in Characters if character.isSick]
                 if len(sickChars)>0:
                     char = random.choice(sickChars)
                     char.isSick=False
+                    returnStuff.append(char.name + " has been cured!")
             else:
                 healthyChars = [character for character in Characters if not character.isSick]
                 if len(healthyChars)>0:
                     char = random.choice(healthyChars)
                     char.isSick=True
+                    returnStuff.append(char.name + " has caught dysentery!\n")
         elif att == "nothing" or supplyEffected:
             pass
         else:
             print "ERROR: BAD DATA - fix your event attributes"
     clearScreen()
-    raw_input(effect.message+"\n")
+    print effect.message
+    print ''.join(returnStuff)
+    raw_input()
 
 def getNumber(menu, min, max, dontInclude = []):
     isGood = True

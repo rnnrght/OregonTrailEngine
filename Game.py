@@ -225,7 +225,7 @@ def healMember():
     string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + " medicine\n\n"
 
     for i, character in enumerate(Characters):
-        string += str(i+1) + ". Heal" + character.name + ": \n"
+        string += str(i+1) + ". Heal " + character.name + ": \n"
         string += "- Health: " + str(character.health) + '\n'
         if character.isSick:
             string += "- Has " + diseaseName + '\n'

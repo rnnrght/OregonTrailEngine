@@ -251,7 +251,7 @@ def healMember():
     if choice >= 0 and choice < len(Characters):
         if Supplies[3].amount == 0:
             clearScreen()
-            raw_input("You do not have enough medicine!")
+            raw_input("You do not have enough " + Supplies[3].unit + "!")
             return
         Characters[choice].isSick = False
         Characters[choice].health += 25

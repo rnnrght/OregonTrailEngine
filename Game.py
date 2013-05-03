@@ -67,6 +67,7 @@ def castEffect(effect):
             pass
         else:
             print "ERROR: BAD DATA - fix your event attributes"
+    clearScreen()
     raw_input(effect.message+"\n")
 
 def getNumber(menu, min, max, dontInclude = []):

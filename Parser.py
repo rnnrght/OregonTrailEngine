@@ -112,7 +112,6 @@ class Parser:
 
         data.close()
 
-
         #Parse in messages.
         #Each message is defined by:
         #A "name" for the message, followed by a tilde and a new line.
@@ -166,29 +165,29 @@ class Parser:
             return ""
 
 if __name__ == '__main__' : #run this file directly for a quick self-test
-	print "Parser self-test:"
-	print "- constructing Parser object:"
-	parser = Parser()
+    print "Parser self-test:"
+    print "- constructing Parser object:"
+    parser = Parser()
 
-	print "- printing attributes dictionary:"
-	print parser.allAttributes()
+    print "- printing attributes dictionary:"
+    print parser.allAttributes()
 
-	print "\n"
-	print "- printing results of get(\"ammoRescName\")"
-	print parser.get("ammoRescName")
-	print "- printing results of get(\"garbage\")"
-	print parser.get("garbage")
-	print "- printing results of get(\"fuelScavRate\")"
-	print parser.get("fuelScavRate")
+    print "\n"
+    print "- printing results of get(\"ammoRescName\")"
+    print parser.get("ammoRescName")
+    print "- printing results of get(\"garbage\")"
+    print parser.get("garbage")
+    print "- printing results of get(\"fuelScavRate\")"
+    print parser.get("fuelScavRate")
 
-	print "- printing a random event"
-	print parser.getEvent().name
-	print parser.getEvent().description
+    print "- printing a random event"
+    print parser.getEvent().name
+    print parser.getEvent().description
 
-	print "- printing city names"
-	for city in parser.getCities():
-		print city.name
-		print city.distanceTo
+    print "- printing city names"
+    for city in parser.getCities():
+        print city.name
+        print city.distanceTo
 
-	print "- dumping message dictionary"
-	print parser.getMessages()
+    print "- dumping message dictionary"
+    print parser.getMessages()

@@ -98,8 +98,7 @@ def castEffect(effect):
                 print "ERROR: BAD DATA - fix your event attributes"
         clearScreen()
     print effect.message
-    print ''.join(returnStuff)
-    raw_input()
+    raw_input(''.join(returnStuff))
     #check for chained/tree events
     if doEvent:
         handleEvent(Events[att])
@@ -213,7 +212,7 @@ def travelLoop():
         while i < len(Characters):
             if Characters[i].health <= 0:
                 clearScreen()
-                raw_input(Characters[i].name + "has died!")
+                raw_input(Characters[i].name + " has died!")
                 Characters.pop(i)
                 i -= 1
             i += 1
@@ -253,7 +252,7 @@ def travelOptions():
     travelOptions()
 
 def healMember():
-    global Characters, Supplies
+    global Characters, Supplies, healthPerHeal, chanceToCure, chanceToHeal
     clearScreen()
     string = "HEAL A PARTY MEMBER\n\nYou have: " + str(Supplies[3].amount) + ' ' + Supplies[3].unit + "\n\n"
 
@@ -271,10 +270,21 @@ def healMember():
     if choice >= 0 and choice < len(Characters):
         if Supplies[3].amount == 0:
             clearScreen()
-            raw_input("You do not have enough medicine!")
+            raw_input("You do not have enough " + Supplies[3].unit + "!")
             return
-        Characters[choice].isSick = False
-        Characters[choice].health += 25
+
+        if Characters[choice].isSick:
+            if random.randint(1,100) <= chanceToCure:
+                Characters[choice].isSick = False
+            else:
+                clearScreen()
+                raw_input("Heal failure!")
+        else:
+            if random.randint(1,100) <= chanceToHeal:
+                Characters[choice].health += 25
+            else:
+                clearScreen()
+                raw_input("Heal failure!")
         if Characters[choice].health > 100:
             Characters[choice].health = 100
         Supplies[3].amount -= 1
@@ -299,11 +309,6 @@ Supplies = []
 Cities = []
 # Each city has a name, distance to next city
 
-Events = []
-
-# Each Event has a name, probibility, and factors that effect the game
-
-
 ##### VARIABLES TO PARSE #####
 
 datfiles = Parser()
@@ -323,6 +328,10 @@ baseEatRate = int(datfiles.get("baseEatRate"))
 hoursToScavenge = int(datfiles.get("hoursToScavenge"))
 
 numCharacters = int(datfiles.get("numCharacters"))
+
+chanceToCure = int(datfiles.get("chanceToCure"))
+chanceToHeal = int(datfiles.get("chanceToHeal"))
+healthPerHeal = int(datfiles.get("healthPerHeal"))
 
 
 sickChance = int(datfiles.get("sickChance"))
@@ -418,7 +427,6 @@ while True:
 
 while running and currentCity < len(Cities):
     travelLoop()
-
     # City event
     if running and currentCity != len(Cities):
         clearScreen()

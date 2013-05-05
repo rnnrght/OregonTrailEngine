@@ -4,3 +4,5 @@ users to create their own adventures with varying themes, events, and actions. I
 .dat files for a default adventure that we have already developed for you.
 
 To run the game simply run Game.py
+
+To create new datfiles for a game, run CreateGame.py (not yet fully implemented)

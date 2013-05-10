@@ -10,8 +10,8 @@ Included are the .dat files for a default adventure that we have already develop
 # Usage
 To run the game you simply need to run this command
 
-<pre><code>./Game.py</code></pre>
+    ./Game.py
 
 To run our data file creation utility, you need to run this command
 
-<pre><code>./CreateGame.py</code></pre>
+    ./CreateGame.py

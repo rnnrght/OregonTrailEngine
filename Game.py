@@ -1,6 +1,6 @@
 #!/usr/bin/python
-
 from GameObjects import *
+import sys
 import os
 import random
 from Parser import *
@@ -149,6 +149,20 @@ def getStatus():
         string += "\n"
     return string
 
+def confirmExit():
+    clearScreen()
+    while 1:
+        choice = raw_input("Are you sure you would like to leave? (y/n): ")
+        if choice == 'y':
+            clearScreen()
+            print "Thank you for playing"
+            sys.exit(0)
+        elif choice == 'n':
+            return
+        else:
+            clearScreen()
+            print "ERROR: input a valid option\n"
+
 def travelLoop():
     global currentCity, Supplies, baseEatRate, Characters, baseTravelRate, pace, meal, win, eventChance
     global mainCharacter, running, sickChance, healthForSickRoll, lostHealthSick, lostHealthNoMeal, datfiles
@@ -158,10 +172,13 @@ def travelLoop():
     # Loop until city is reached
     while city.distanceTo > 0:
         string = getStatus()
-        string += "1. Continue\n2. Travel Options\nWhat will you do?: "
-        choice = getNumber(string, 1, 2)
+        string += "1. Continue\n2. Travel Options\n3. Exit game\nWhat will you do?: "
+        choice = getNumber(string, 1, 3)
         if choice == 2:
             travelOptions()
+            continue
+        elif choice == 3:
+            confirmExit()
             continue
 
         if pace[0] == "fast":
@@ -294,6 +311,23 @@ def healMember():
     else:
         healMember()
 
+##### PROGRAM EXECUTION STARTS #####
+
+printString = "Which Game would you like to play?"
+i = 0
+new = False
+dirList = os.listdir("gameData")
+
+for i, direc in enumerate(dirList):
+	printString += "\n\t" + str(i+1) + ": " + direc
+
+printString += "\nWhat would you like to do: "
+choice = getNumber(printString, 1, i+1) - 1
+
+path = "gameData/" + dirList[choice]
+
+###### GAME VARIABLES #####
+
 Characters = []
 # Characters[0] = Main character
 
@@ -311,7 +345,7 @@ Cities = []
 
 ##### VARIABLES TO PARSE #####
 
-datfiles = Parser()
+datfiles = Parser(path)
 
 startScreen = datfiles.getMessage("startScreen")
 
@@ -374,9 +408,6 @@ pace = ("normal", 1.0) # NOT PARSEABLE
 running = True # NOT PARSEABLE
 currentCity = 0 # NOT PARSEABLE
 win = True # NOT PARSEABLE
-
-##########################
-
 
 ##### GAME EXECUTION STARTS #####
 

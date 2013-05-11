@@ -4,7 +4,7 @@ from GameObjects import City
 import random
 
 class Parser:
-    def __init__(self):
+    def __init__(self, path = ""):
 
         #Parse in basic game parameters
             #Each game parameter is on its own line.
@@ -12,7 +12,7 @@ class Parser:
             #For example:
                 #partsRescName:flux capacitors
             #defines an attribute called "partsRescName" with the value "flux capacitors"
-        data = open("Game.dat", "r")
+        data = open(path + "/Game.dat", "r")
         self.gameParams = {}
         for line in data:
             line = line.strip()
@@ -38,7 +38,7 @@ class Parser:
                 #6. the resources affected by a bad effect
                 #7. the amounts of resource added by a bad effect
                 #8. text for the bad effect
-        data = open("Event.dat", "r")
+        data = open(path + "/Event.dat", "r")
         self.eventDefs = {}
         for line in data:
             line = line.strip()
@@ -95,7 +95,7 @@ class Parser:
             #Tokyo:400
 
         self.cities = []
-        data = open("Cities.dat", "r")
+        data = open(path + "/Cities.dat", "r")
         for line in data:
             line = line.strip()
             if line == "":
@@ -112,13 +112,12 @@ class Parser:
 
         data.close()
 
-
         #Parse in messages.
         #Each message is defined by:
         #A "name" for the message, followed by a tilde and a new line.
         #Then, the full text of the message, followed by a tilde.
         self.messages = {}
-        data = open("Messages.dat", "r").read()
+        data = open(path + "/Messages.dat", "r").read()
         data = data.split("~")
         data = [item.strip('\n') for item in data]
         rawMessages = [item for item in data if item != ""]
@@ -166,29 +165,29 @@ class Parser:
             return ""
 
 if __name__ == '__main__' : #run this file directly for a quick self-test
-	print "Parser self-test:"
-	print "- constructing Parser object:"
-	parser = Parser()
+    print "Parser self-test:"
+    print "- constructing Parser object:"
+    parser = Parser()
 
-	print "- printing attributes dictionary:"
-	print parser.allAttributes()
+    print "- printing attributes dictionary:"
+    print parser.allAttributes()
 
-	print "\n"
-	print "- printing results of get(\"ammoRescName\")"
-	print parser.get("ammoRescName")
-	print "- printing results of get(\"garbage\")"
-	print parser.get("garbage")
-	print "- printing results of get(\"fuelScavRate\")"
-	print parser.get("fuelScavRate")
+    print "\n"
+    print "- printing results of get(\"ammoRescName\")"
+    print parser.get("ammoRescName")
+    print "- printing results of get(\"garbage\")"
+    print parser.get("garbage")
+    print "- printing results of get(\"fuelScavRate\")"
+    print parser.get("fuelScavRate")
 
-	print "- printing a random event"
-	print parser.getEvent().name
-	print parser.getEvent().description
+    print "- printing a random event"
+    print parser.getEvent().name
+    print parser.getEvent().description
 
-	print "- printing city names"
-	for city in parser.getCities():
-		print city.name
-		print city.distanceTo
+    print "- printing city names"
+    for city in parser.getCities():
+        print city.name
+        print city.distanceTo
 
-	print "- dumping message dictionary"
-	print parser.getMessages()
+    print "- dumping message dictionary"
+    print parser.getMessages()

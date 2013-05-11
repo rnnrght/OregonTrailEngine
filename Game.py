@@ -9,7 +9,8 @@ from Parser import *
 ##### VARIOUS FUNCTIONS #####
 def handleEvent(event):
     clearScreen()
-    dontInclude = []
+    dontInclude = [] #index for options the player cannot choose
+    #display supplies before event
     toPrint = "Supplies:\n"
     for supply in Supplies:
         toPrint += supply.name + ": " + str(supply.amount) + " " + supply.unit + '\n'
@@ -18,10 +19,13 @@ def handleEvent(event):
     i=0
     badSupplies = {}
 
+    #iterate through all options and filter based on if possible
     for i, option in enumerate(event.options):
         canDo=True
         for goodAtt, goodAmt in zip(event.goodEffects[i].attribute,event.goodEffects[i].amount):
             for k, att in enumerate(("food","ammunition","money","meds")):
+                #check if player has enough supplies to do the good effect
+                #ie: ammo cost, money cost, etc
                 if goodAtt == att and goodAmt + Supplies[k].amount < 0:
                     canDo = False
                     badSupplies[Supplies[k].name] = True
@@ -42,11 +46,14 @@ def handleEvent(event):
     choice = getNumber(toPrint + "Enter your choice: ", 1, i+1, dontInclude) - 1
     x = random.randint(1, 100)
     chance = 0.0
+    #chance increases based on how many people are alive
+    #if chance is 60%, first alive gets 60, next alive get 60% of the remain 40, and so on
     for i in range(len(Characters)):
         chance+= (1-chance) * event.chances[choice] / 100.0
+    #if they succesful did the event (pass chance roll)
     if x <= chance * 100.0:
         castEffect(event.goodEffects[choice])
-    else:
+    else:#failed the chance roll
         castEffect(event.badEffects[choice])
 
 def castEffect(effect):
@@ -54,6 +61,7 @@ def castEffect(effect):
     doEvent=False
     for att, amt in zip(effect.attribute,effect.amount):
         supplyEffected=False
+        #check for changes against the base 3 supplies and has error check for going negative
         for j, checkAtt in enumerate(("food", "ammunition", "money", "meds")):
             if att == checkAtt:
                 Supplies[j].amount+=amt
@@ -65,37 +73,42 @@ def castEffect(effect):
                     Supplies[j].amount=0
                     returnStuff.append("Ran out of " + checkAtt + "!\n")
                 supplyEffected=True
+        #for tree events, att will equal the key of another event
         if att in [event for event in Events]:
             doEvent=True
         else:
             if att == "health":
                 if amt > 0:
+                    #dont heal full or recently killed character
                     notFullChars = [character for character in Characters if character.health != 100 and character.health>0]
                     if len(notFullChars)>0:
-                        char = random.choice(notFullChars)
+                        char = random.choice(notFullChars)#randomly heal a valid character
                         returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
+                        char.health+=amt
+                        if char.health>100:#dont go over 100 health
+                            char.health=100
                 else:
                     notDeadChars = [character for character in Characters if character.health >0]
                     if len(notDeadChars)> 0:
-                        char = random.choice(notDeadChars)
+                        char = random.choice(notDeadChars)#random hurt and alive character
                         returnStuff.append(char.name + " has lost " + str(amt*-1) + " health.\n")
-                char.health+=amt
+                        char.health+=amt
             elif att == "sick":
                 if amt == 0:
                     sickChars = [character for character in Characters if character.isSick]
                     if len(sickChars)>0:
-                        char = random.choice(sickChars)
+                        char = random.choice(sickChars)#only cure sick
                         char.isSick=False
                         returnStuff.append(char.name + " has been cured!\n")
                 else:
                     healthyChars = [character for character in Characters if not character.isSick]
                     if len(healthyChars)>0:
-                        char = random.choice(healthyChars)
+                        char = random.choice(healthyChars)#only make healthy sick
                         char.isSick=True
                         returnStuff.append(char.name + " has caught " + diseaseName + "!\n")
             elif att == "nothing" or supplyEffected:
                 pass
-            else:
+            else:#debugging message
                 print "ERROR: BAD DATA - fix your event attributes"
         clearScreen()
     print effect.message

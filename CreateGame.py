@@ -5,30 +5,23 @@ import sys
 import string
 
 def clearScreen():
-    os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
+	os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
 
 def getNumber(menu, min, max, dontInclude = []):
-    isGood = True
-    while True:
-        clearScreen()
-        if isGood == False:
-            print "ERROR: Input a valid number\n"
-            isGood = True
-        string = raw_input(menu)
-        if string == "":
-            isGood = False
-            continue
-        for char in string:
-            if ord(char) < 48 or ord(char) > 57:
-                isGood = False
-                break
-
-        if isGood:
-            num = int(string)
-            if num >= min and num <= max and num not in dontInclude:
-                break
-        isGood = False
-    return num
+	isGood = True
+	while True:
+		clearScreen()
+		if isGood == False:
+			print "ERROR: Input a valid number\n"
+			isGood = True
+		string = raw_input(menu)
+		if string == "":
+			isGood = False
+			continue
+		for char in string:
+			if ord(char) < 48 or ord(char) > 57:
+				isGood = False
+				break
 
 def MessageParse():
 	self.messages = {}
@@ -52,32 +45,101 @@ def Game():
 
 	gameDataTuple = "baseTravelRate:", "\nbaseEatRate:", "\nhoursToScavenge:", "\nnumCharacters:", "\nsickChance:", "\nhealthForSickRoll:", "\nlostHealthSick:", "\nlostHealthNoMeal:", "\nlostHealthSmallMeal:", "\nlostHealthSkimpyMeal:", "\nlostHealthFastTravel:", "\nlostHealthGruelingTravel:", "\ndiseaseName:", "\ndistanceUnit:", "\neventChance:", "\nfoodName:", "\nammunitionName:", "\nmoneyName:", "\nmedicineName:", "\nfoodRate:", "\nammunitionRate:", "\nmoneyRate:", "\nmedicineRate:", "\nfoodUnit:", "\nammunitionUnit:", "\nmoneyUnit:", "\nmedicineUnit:", "\nhealthPerHeal:", "\nchanceToCure:", "\nchanceToHeal:"
 
+		if isGood:
+			num = int(string)
+			if num >= min and num <= max and num not in dontInclude:
+				break
+		isGood = False
+	return num
+
+#def MessageParse():
+#	self.messages = {}
+#	data = open("Messages.dat", "r").read()
+#	data = data.split("~")
+#	data = [item.strip('\n') for item in data]
+#	rawMessages = [item for item in data if item != ""]
+
+#	i = 0
+#	while i < len(rawMessages):
+#		try:
+#			self.messages[rawMessages[i].strip()] = rawMessages[i+1]
+#		except IndexError:
+#			print "Problem reading messages. Dump: "
+#			print rawMessages
+#		i = i+2
+
+def Game():
+	gameData = ''
+	gameTuple = "base travel rate", "base eating rate", "number of hours to scavenge", "number of  characters in your party", "chance to get sick", "health at which you can get sick", "health lost when sick", "health lost with the 'no meal' option", "health lost with the 'small meal' option", "health lost with the 'skimpy meal' option", "health lost with 'fast travel' option", "health lost with 'grueling travel' option", "disease name", "distance unit", "chance of an event", '', '', '', '', "food rate when scavenging", "ammunition rate when scavenging", "money rate when scavenging", "medicine rate when scavenging", "food unit", "ammunition unit", "currency unit", "medicine unit", "health gained when a med kit is used", "chance to cure when a med kit is used", "chance to heal when a med kit is used"
+
+	gameDataTuple = "baseTravelRate:", "\nbaseEatRate:", "\nhoursToScavenge:", "\nnumCharacters:", "\nsickChance:", "\nhealthForSickRoll:", "\nlostHealthSick:", "\nlostHealthNoMeal:", "\nlostHealthSmallMeal:", "\nlostHealthSkimpyMeal:", "\nlostHealthFastTravel:", "\nlostHealthGruelingTravel:", "\ndiseaseName:", "\ndistanceUnit:", "\neventChance:", "\nfoodName:food", "\nammunitionName:ammunition", "\nmoneyName:money", "\nmedicineName:medicine", "\nfoodRate:", "\nammunitionRate:", "\nmoneyRate:", "\nmedicineRate:", "\nfoodUnit:", "\nammunitionUnit:", "\nmoneyUnit:", "\nmedicineUnit:", "\nhealthPerHeal:", "\nchanceToCure:", "\nchanceToHeal:"
+
+>>>>>>> armaunm-development:EventScript.py
 	for i, data in enumerate(gameDataTuple):
 		clearScreen()
 		gameData += data
-		if i > 18 and i < 14:
+		if i > 18 or i < 15:
 			gameData += raw_input("What is the " + gameTuple[i] + ": ")
+	game = open("Game.dat", 'w')
 	game.write(gameData)
+	game.close()
+
+def modGame():
+	game = open("Game.dat", 'r')
+	games = game.read()
+	gameList = games.split('\n')
+
+
+
+
 
 def Messages():
 	clearScreen()
-	print "Note: \\n represents a newline character and \\t represents a tab."
+
+	print "Note: Hit enter to go to the next line and hit enter on an empty line to finish."
 	print "Please type it exactly as you want to see it."
+	print "What would you like the start screen to look like:\n"
 	messagesData = "startScreen~\n"
+<<<<<<< HEAD:CreateGame.py
 	print "What would you like the start screen to look like:"
 
+=======
+>>>>>>> armaunm-development:EventScript.py
 	while True:
 		line = raw_input()
 		if line.strip() == '':
 			break
+<<<<<<< HEAD:CreateGame.py
 		messagesData += raw_input("What would you like the start screen to look like:\n")
 
+=======
+		messagesData += '\n' + line
+
+	print "Note: Hit enter to go to the next line and hit enter on an empty line to finish."
+	print "Please type it exactly as you want to see it."
+	print "What would you like the game over screen to look like:\n"
+>>>>>>> armaunm-development:EventScript.py
 	messagesData += '\n~\ngameOver~\n'
-	messagesData += raw_input("What would you like the game over screen to look like:\n")
+	while True:
+		line = raw_input()
+		if line.strip() == '':
+			break
+		messagesData += '\n' + line
+
+	print "Note: Hit enter to go to the next line and hit enter on an empty line to finish."
+	print "Please type it exactly as you want to see it."
+	print "What would you like the win screen to look like:\n"
 	messagesData += '\n~\nwinScreen~\n'
-	messagesData += raw_input("What would you like the win screen to look like:\n")
-	messagesData += '~\n'
+	while True:
+		line = raw_input()
+		if line.strip() == '':
+			break
+		messagesData += '\n' + line
+	messagesData += '\n~'
+
+	messages = open('Messages.dat', 'w')
 	messages.write(messagesData)
+<<<<<<< HEAD:CreateGame.py
 
 def modMessages():
 	clearScreen()
@@ -85,6 +147,35 @@ def modMessages():
 	print "The current screens are:"
 
 
+=======
+	messages.close()
+
+def modMessages():
+	clearScreen()
+	while True:
+		screenList = "1: Start Screen", "2: Game Over Screen", "3: Win Screen"
+
+		print "Note: Hit enter to go to the next line and hit enter on an empty line to finish."
+		print "The current screens are:"
+		messages = open("Messages.dat", 'r')
+		message = messages.read()
+		messages.close()
+
+		messageList = [message.split('~')]
+		printString = '\n'.join(MessageList)
+
+		choice = getNumber(screenList, 1, 3)
+		print "Note: Hit enter to go to the next line and hit enter on an empty line to finish."
+		print "Please type it exactly as you want to see it."
+		newScreen = raw_input("Write the new screen:\n")
+		while True:
+			line = raw_input()
+			if line.strip() == '':
+				break
+			messageList[2*choice] += '\n' + line
+
+
+>>>>>>> armaunm-development:EventScript.py
 def Event():
 
 	newLine = False
@@ -94,8 +185,12 @@ def Event():
 		if numAttr == 0:
 			printString = str(numAttr+1) + ": " + attr
 		else:
+<<<<<<< HEAD:CreateGame.py
 			printString += "\n" + str(numAttr+1) + ": " + attr
 
+=======
+			printString += "\n" + str(numAttr+1) + ": " + attr
+>>>>>>> armaunm-development:EventScript.py
 	printString += "\nWhich attribute would be modified by this choice: "
 
 	moreEvents = True
@@ -103,7 +198,7 @@ def Event():
 	while(moreEvents == True):
 		eventData = ''
 		clearScreen()
-		print "Note: Put a C, R, or T if you want the event to occur in the city, while        traveling or be a tree event, respectively."
+		print "Note: Put a C, R, or T if you want the event to occur in the city, while		traveling or be a tree event, respectively."
 		print "Example: CLookForItems: It occurs in the city and is called LookForItems"
 
 		if newLine:
@@ -175,7 +270,6 @@ def Event():
 
 # This is function that is called to add cities when a new directory is created
 def Cities():
-	cities = open('Cities.txt', 'w')
 	city = []
 	distance = []
 	numOfCities = ''
@@ -214,7 +308,12 @@ def Cities():
 				print "INVALID INPUT: PLEASE INPUT A NUMERICAL VALUE\n"
 
 		cityData += '\n' + city[i] + ':' + distance[i]
+<<<<<<< HEAD:CreateGame.py
 
+=======
+
+	cities = open('Cities.dat', 'w')
+>>>>>>> armaunm-development:EventScript.py
 	cities.write(cityData)
 	cities.close()
 
@@ -227,7 +326,7 @@ def modCities():
 		cityList = []
 		printString = '1: Add cities\n2: Delete cities\n3: Exit\nWhat would you like to do: '
 		choice = getNumber(printString, 1, 3)
-		cities = open('Cities.txt', 'r')
+		cities = open('Cities.dat', 'r')
 		cityList = cities.readlines()
 		cities.close()
 		i = 0
@@ -277,6 +376,7 @@ def modCities():
 		if choice == 3:
 			break
 		city = ''.join(cityList)
+<<<<<<< HEAD:CreateGame.py
 
 		cities = open('Cities.txt', 'w')
 		cities.write(city)
@@ -284,6 +384,14 @@ def modCities():
 
 
 
+=======
+
+		cities = open('Cities.dat', 'w')
+		cities.write(city)
+		cities.close()
+
+
+>>>>>>> armaunm-development:EventScript.py
 # Main function starts here
 
 i = 0

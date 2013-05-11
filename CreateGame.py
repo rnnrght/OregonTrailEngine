@@ -3,6 +3,7 @@
 import os
 import sys
 import string
+import copy
 
 def clearScreen():
     os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
@@ -30,44 +31,113 @@ def getNumber(menu, min, max, dontInclude = []):
         isGood = False
     return num
 
-
+# This function creates and writes all the data to the Game.dat file
 def Game():
 	gameData = ''
-	gameTuple = "base travel rate", "base eating rate", "number of hours to scavenge", "number of  characters in your party", "chance to get sick", "health at which you can get sick", "health lost when sick", "health lost with the 'no meal' option", "health lost with the 'small meal' option", "health lost with the 'skimpy meal' option", "health lost with 'fast travel' option", "health lost with 'grueling travel' option", "disease name", "distance unit", "chance of an event", "food rate when scavenging", "ammunition rate when scavenging", "money rate when scavenging", "medicine rate when scavenging", "food unit", "ammunition unit", "currency unit", "medicine unit", "health gained when a med kit is used", "chance to cure when a med kit is used", "chance to heal when a med kit is used"
+	gameTuple = "base travel rate", "base eating rate", "number of hours to scavenge", "number of  characters in your party", "chance to get sick", "health at which you can get sick", "health lost when sick", "health lost with the 'no meal' option", "health lost with the 'small meal' option", "health lost with the 'skimpy meal' option", "health lost with 'fast travel' option", "health lost with 'grueling travel' option", "disease name", "distance unit", "chance of an event",'','','','', "food rate when scavenging", "ammunition rate when scavenging", "money rate when scavenging", "medicine rate when scavenging", "food unit", "ammunition unit", "currency unit", "medicine unit", "health gained when a med kit is used", "chance to cure when a med kit is used", "chance to heal when a med kit is used"
 
-	gameDataTuple = "baseTravelRate:", "\nbaseEatRate:", "\nhoursToScavenge:", "\nnumCharacters:", "\nsickChance:", "\nhealthForSickRoll:", "\nlostHealthSick:", "\nlostHealthNoMeal:", "\nlostHealthSmallMeal:", "\nlostHealthSkimpyMeal:", "\nlostHealthFastTravel:", "\nlostHealthGruelingTravel:", "\ndiseaseName:", "\ndistanceUnit:", "\neventChance:", "\nfoodName:", "\nammunitionName:", "\nmoneyName:", "\nmedicineName:", "\nfoodRate:", "\nammunitionRate:", "\nmoneyRate:", "\nmedicineRate:", "\nfoodUnit:", "\nammunitionUnit:", "\nmoneyUnit:", "\nmedicineUnit:", "\nhealthPerHeal:", "\nchanceToCure:", "\nchanceToHeal:"
+	gameDataTuple = "baseTravelRate:", "\nbaseEatRate:", "\nhoursToScavenge:", "\nnumCharacters:", "\nsickChance:", "\nhealthForSickRoll:", "\nlostHealthSick:", "\nlostHealthNoMeal:", "\nlostHealthSmallMeal:", "\nlostHealthSkimpyMeal:", "\nlostHealthFastTravel:", "\nlostHealthGruelingTravel:", "\ndiseaseName:", "\ndistanceUnit:", "\neventChance:", "\nfoodName:food", "\nammunitionName:ammunition", "\nmoneyName:money", "\nmedicineName:medicine", "\nfoodRate:", "\nammunitionRate:", "\nmoneyRate:", "\nmedicineRate:", "\nfoodUnit:", "\nammunitionUnit:", "\nmoneyUnit:", "\nmedicineUnit:", "\nhealthPerHeal:", "\nchanceToCure:", "\nchanceToHeal:"
 
 	for i, data in enumerate(gameDataTuple):
 		clearScreen()
 		gameData += data
-		if i > 18 and i < 14:
+		if i > 18 or i < 15:
 			gameData += raw_input("What is the " + gameTuple[i] + ": ")
+	game = open("Game.dat", 'w')
 	game.write(gameData)
+	game.close()
+	
+def modGame():
+	gameList = []
+	valChange = []	
+	printString = ''
+	
+	game = open("Game.dat", 'r')
+	gameList = game.readlines()
+	game.close()
+	
+	for i, element in enumerate(gameList):
+		printString += str(i+1) + ': ' + element
+		
+	printString += "\nWhich game attribute would you like to modify: "
+	choice = getNumber(printString, 1, i+1) - 1
+	
+	value = raw_input("What is the new value or unit: ")
+	valChange = gameList[choice].split(':') 
+	valChange[1] = value + '\n'
+	gameList[choice] = ':'.join(valChange)
+	
+	gameData = ''.join(gameList)
+	
+	game = open("Game.dat", 'w')
+	game.write(gameData)
+	game.close()
 
-def Messages():
-	clearScreen()
-	print "Note: \\n represents a newline character and \\t represents a tab."
-	print "Please type it exactly as you want to see it."
-	messagesData = "startScreen~\n"
-	print "What would you like the start screen to look like:"
-
+def messageScreen(screenType):
+	screenMessage = ''
+	if screenType == 1:
+		screen = " start screen "
+	elif screenType == 2:
+		screen = " game over screen "
+	elif screenType == 3:
+		screen = " win screen "
+	elif screenType == 4:
+		screen = " new screen "
+		
+	print "Note: Hit enter to go to the next line. Once you go to the next line you cannot go back."
+	print "2nd Note: Hit enter twice to finish the message"
+	print "What would you like the" + screen + "to look like:"
 	while True:
 		line = raw_input()
 		if line.strip() == '':
 			break
-		messagesData += raw_input("What would you like the start screen to look like:\n")
+		screenMessage += line + '\n'
+		
+	return screenMessage
 
-	messagesData += '\n~\ngameOver~\n'
-	messagesData += raw_input("What would you like the game over screen to look like:\n")
-	messagesData += '\n~\nwinScreen~\n'
-	messagesData += raw_input("What would you like the win screen to look like:\n")
+# This function creates and writes messages to the Messages .dat file
+def Messages():
+	clearScreen()
+	
+	messagesData = "startScreen~\n"
+	messagesData += messageScreen(1)
+
+	messagesData += '~\ngameOver~\n'
+	messagesData += messageScreen(2)
+	
+	messagesData += '~\nwinScreen~\n'
+	messagesData += messageScreen(3)
 	messagesData += '~\n'
+	
+	messages = open("Messages.dat", 'w')
 	messages.write(messagesData)
+	messages.close()
 
 def modMessages():
-	clearScreen()
-	print "Note: \\n represents a newline character and \\t represents a tab."
-	print "The current screens are:"
+	messages = open("Messages.dat", 'r')
+	messageList = []
+	messageList = messages.readlines()
+	messages.close()
+	
+	messageString = ''.join(messageList)
+	messageString.strip('~')
+	messageList = messageString.split('~\n')
+	
+	tempList = copy.deepcopy(messageList)
+	tempList[0] = '1: ' + tempList[0]
+	tempList[2] = '2: ' + tempList[2]
+	tempList[4] = '3: ' + tempList[4]
+	
+	printString = '\n'.join(tempList)
+	printString += "\nWhich screen would you like to modify: "
+	choice = getNumber(printString, 1, 3) - 1
+	choice = 2*choice + 1
+	messageList[choice] = messageScreen(4)
+	messageData = '~\n'.join(messageList)
+	
+	messages = open("Messages.dat", 'w')
+	messages.write(messageData)
+	messages.close()
 
 # This is one of the helper functions for the Event method. 
 # It shortens the code for creating the attributes and values modified for the choices
@@ -114,6 +184,7 @@ def eventAttr(eventDataList, SuccFail):
 		eventDataList.append('/'.join(modVal))
 	return eventDataList
 
+# This function creates and add events to the Event.dat file
 def Event(EventType):
 	moreEvents = True
 
@@ -160,7 +231,8 @@ def Event(EventType):
 			return eventDataList[0]
 		if(cont == 'n'):
 			moreEvents = False
-		
+
+# This function allows to add or delete events form the Event.dat file		
 def modEvent():
 	while True:
 		printString = "1: Add events\n2: Delete events\n3: Exit\nWhat would you like to do: "	
@@ -191,7 +263,6 @@ def modEvent():
 			
 # This is function that is called to add cities when a new directory is created
 def Cities():
-	cities = open('Cities.txt', 'w')
 	city = []
 	distance = []
 	numOfCities = ''
@@ -231,6 +302,7 @@ def Cities():
 
 		cityData += '\n' + city[i] + ':' + distance[i]
 
+	cities = open('Cities.dat', 'w')
 	cities.write(cityData)
 	cities.close()
 
@@ -243,7 +315,7 @@ def modCities():
 		cityList = []
 		printString = '1: Add cities\n2: Delete cities\n3: Exit\nWhat would you like to do: '
 		choice = getNumber(printString, 1, 3)
-		cities = open('Cities.txt', 'r')
+		cities = open('Cities.dat', 'r')
 		cityList = cities.readlines()
 		cities.close()
 		i = 0
@@ -294,7 +366,7 @@ def modCities():
 			break
 		city = ''.join(cityList)
 
-		cities = open('Cities.txt', 'w')
+		cities = open('Cities.dat', 'w')
 		cities.write(city)
 		cities.close()
 

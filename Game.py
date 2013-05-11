@@ -432,7 +432,7 @@ while running and currentCity < len(Cities):
     # City event
     if running and currentCity != len(Cities):
         clearScreen()
-        raw_input("You have arrived at "+Cities[currentCity-1].name+".")
+        raw_input("You have arrived at "+Cities[currentCity-1].name+".\n"+ str(Cities[currentCity].distanceTo)+" "+distanceUnit+" to "+Cities[currentCity].name+".")
         event = datfiles.getTypeEvent("C")
         handleEvent(event)
 

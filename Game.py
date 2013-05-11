@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from GameObjects import *
+import sys
 import os
 import random
 from Parser import *
@@ -149,6 +150,20 @@ def getStatus():
         string += "\n"
     return string
 
+def confirmExit():
+    clearScreen()
+    while 1:
+        choice = raw_input("Are you sure you would like to leave? (y/n): ")
+        if choice == 'y':
+            clearScreen()
+            print "Thank you for playing"
+            sys.exit(0)
+        elif choice == 'n':
+            return
+        else:
+            clearScreen()
+            print "ERROR: input a valid option\n"
+
 def travelLoop():
     global currentCity, Supplies, baseEatRate, Characters, baseTravelRate, pace, meal, win, eventChance
     global mainCharacter, running, sickChance, healthForSickRoll, lostHealthSick, lostHealthNoMeal, datfiles
@@ -158,10 +173,13 @@ def travelLoop():
     # Loop until city is reached
     while city.distanceTo > 0:
         string = getStatus()
-        string += "1. Continue\n2. Travel Options\nWhat will you do?: "
-        choice = getNumber(string, 1, 2)
+        string += "1. Continue\n2. Travel Options\n3. Exit game\nWhat will you do?: "
+        choice = getNumber(string, 1, 3)
         if choice == 2:
             travelOptions()
+            continue
+        elif choice == 3:
+            confirmExit()
             continue
 
         if pace[0] == "fast":
@@ -294,48 +312,46 @@ def healMember():
     else:
         healMember()
 
-Characters = []
-# Characters[0] = Main character
+##### PROGRAM EXECUTION STARTS #####
 
-# Each supply is constructed with its name, followed by the number that can be scavenged per hour
+printString = "Which Game would you like to play?"
+i = 0
+new = False
+dirList = os.listdir("gameData")
+
+for i, direc in enumerate(dirList):
+	printString += "\n\t" + str(i+1) + ": " + direc
+
+printString += "\nWhat would you like to do: "
+choice = getNumber(printString, 1, i+1) - 1
+
+path = "gameData/" + dirList[choice]
+
+###### GAME VARIABLES #####
+
+meal = ("normal", 1.0)
+pace = ("normal", 1.0)
+running = True
+currentCity = 0
+win = True
 Supplies = []
-# Each supply has a name, and the number of remaining units
-
-# Supplies[0] = Food
-# Supplies[1] = Ammunition
-# Supplies[2] = Monies
-# Supplies[3] = Meds
-
-Cities = []
-# Each city has a name, distance to next city
+Characters = []
 
 ##### VARIABLES TO PARSE #####
 
-datfiles = Parser()
-
+datfiles = Parser(path)
 startScreen = datfiles.getMessage("startScreen")
-
 gameOver = datfiles.getMessage("gameOver")
-
 winScreen = datfiles.getMessage("winScreen")
-
-# Units that are travelled per travel cycle
 baseTravelRate = int(datfiles.get("baseTravelRate"))
-
-# Units eaten per travel cycle
 baseEatRate = int(datfiles.get("baseEatRate"))
-
 hoursToScavenge = int(datfiles.get("hoursToScavenge"))
-
 numCharacters = int(datfiles.get("numCharacters"))
-
 chanceToCure = int(datfiles.get("chanceToCure"))
 chanceToHeal = int(datfiles.get("chanceToHeal"))
 healthPerHeal = int(datfiles.get("healthPerHeal"))
-
-
 sickChance = int(datfiles.get("sickChance"))
-healthForSickRoll = int(datfiles.get("healthForSickRoll")) # Health below which characters can get sick
+healthForSickRoll = int(datfiles.get("healthForSickRoll"))
 lostHealthSick = int(datfiles.get("lostHealthSick"))
 lostHealthNoMeal = int(datfiles.get("lostHealthNoMeal"))
 lostHealthSmallMeal = int(datfiles.get("lostHealthSmallMeal"))
@@ -343,11 +359,8 @@ lostHealthSkimpyMeal = int(datfiles.get("lostHealthSkimpyMeal"))
 lostHealthFastTravel = int(datfiles.get("lostHealthFastTravel"))
 lostHealthGruelingTravel = int(datfiles.get("lostHealthGruelingTravel"))
 diseaseName = datfiles.get("diseaseName")
-
 eventChance = int(datfiles.get("eventChance"))
-
 distanceUnit = datfiles.get("distanceUnit")
-
 foodName = datfiles.get("foodName")
 ammunitionName = datfiles.get("ammunitionName")
 moneyName = datfiles.get("moneyName")
@@ -360,23 +373,12 @@ foodUnit = datfiles.get("foodUnit")
 ammunitionUnit = datfiles.get("ammunitionUnit")
 moneyUnit = datfiles.get("moneyUnit")
 medicineUnit = datfiles.get("medicineUnit")
-
-# All of the supply types: first arg is name, second is number gatherable per hour
+Cities = datfiles.getCities()
+Events = datfiles.getEventDefs()
 Supplies.append(Supply(foodName, foodRate, foodUnit))
 Supplies.append(Supply(ammunitionName, ammunitionRate, ammunitionUnit))
 Supplies.append(Supply(moneyName, moneyRate, moneyUnit))
 Supplies.append(Supply(medicineName, medicineRate, medicineUnit))
-
-Cities = datfiles.getCities()
-Events = datfiles.getEventDefs()
-meal = ("normal", 1.0) # NOT PARSEABLE
-pace = ("normal", 1.0) # NOT PARSEABLE
-running = True # NOT PARSEABLE
-currentCity = 0 # NOT PARSEABLE
-win = True # NOT PARSEABLE
-
-##########################
-
 
 ##### GAME EXECUTION STARTS #####
 

@@ -4,7 +4,7 @@ from GameObjects import City
 import random
 
 class Parser:
-    def __init__(self):
+    def __init__(self, path = ""):
 
         #Parse in basic game parameters
             #Each game parameter is on its own line.
@@ -12,7 +12,7 @@ class Parser:
             #For example:
                 #partsRescName:flux capacitors
             #defines an attribute called "partsRescName" with the value "flux capacitors"
-        data = open("Game.dat", "r")
+        data = open(path + "/Game.dat", "r")
         self.gameParams = {}
         for line in data:
             line = line.strip()
@@ -38,7 +38,7 @@ class Parser:
                 #6. the resources affected by a bad effect
                 #7. the amounts of resource added by a bad effect
                 #8. text for the bad effect
-        data = open("Event.dat", "r")
+        data = open(path + "/Event.dat", "r")
         self.eventDefs = {}
         for line in data:
             line = line.strip()
@@ -95,7 +95,7 @@ class Parser:
             #Tokyo:400
 
         self.cities = []
-        data = open("Cities.dat", "r")
+        data = open(path + "/Cities.dat", "r")
         for line in data:
             line = line.strip()
             if line == "":
@@ -117,7 +117,7 @@ class Parser:
         #A "name" for the message, followed by a tilde and a new line.
         #Then, the full text of the message, followed by a tilde.
         self.messages = {}
-        data = open("Messages.dat", "r").read()
+        data = open(path + "/Messages.dat", "r").read()
         data = data.split("~")
         data = [item.strip('\n') for item in data]
         rawMessages = [item for item in data if item != ""]

@@ -71,13 +71,18 @@ def castEffect(effect):
             if att == "health":
                 if amt > 0:
                     notFullChars = [character for character in Characters if character.health != 100 and character.health>0]
-                    char = random.choice(notFullChars)
-                    returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
+                    if len(notFullChars)>0:
+                        char = random.choice(notFullChars)
+                        returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
+                        char.health+=amt
+                        if char.health>100:
+                            char.health=100
                 else:
                     notDeadChars = [character for character in Characters if character.health >0]
-                    char = random.choice(notDeadChars)
-                    returnStuff.append(char.name + " has lost " + str(amt*-1) + " health.\n")
-                char.health+=amt
+                    if len(notDeadChars)> 0:
+                        char = random.choice(notDeadChars)
+                        returnStuff.append(char.name + " has lost " + str(amt*-1) + " health.\n")
+                        char.health+=amt
             elif att == "sick":
                 if amt == 0:
                     sickChars = [character for character in Characters if character.isSick]
@@ -430,7 +435,7 @@ while running and currentCity < len(Cities):
     # City event
     if running and currentCity != len(Cities):
         clearScreen()
-        raw_input("You have arrived at "+Cities[currentCity-1].name+".")
+        raw_input("You have arrived at "+Cities[currentCity-1].name+".\n"+ str(Cities[currentCity].distanceTo)+" "+distanceUnit+" to "+Cities[currentCity].name+".")
         event = datfiles.getTypeEvent("C")
         handleEvent(event)
 

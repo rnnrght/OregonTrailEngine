@@ -30,22 +30,7 @@ def getNumber(menu, min, max, dontInclude = []):
         isGood = False
     return num
 
-def MessageParse():
-	self.messages = {}
-        data = open("Messages.dat", "r").read()
-        data = data.split("~")
-        data = [item.strip('\n') for item in data]
-        rawMessages = [item for item in data if item != ""]
-
-        i = 0
-        while i < len(rawMessages):
-            try:
-                self.messages[rawMessages[i].strip()] = rawMessages[i+1]
-            except IndexError:
-                print "Problem reading messages. Dump: "
-                print rawMessages
-            i = i+2
-
+# This function creates and writes all the data to the Game.dat file
 def Game():
 	gameData = ''
 	gameTuple = "base travel rate", "base eating rate", "number of hours to scavenge", "number of  characters in your party", "chance to get sick", "health at which you can get sick", "health lost when sick", "health lost with the 'no meal' option", "health lost with the 'small meal' option", "health lost with the 'skimpy meal' option", "health lost with 'fast travel' option", "health lost with 'grueling travel' option", "disease name", "distance unit", "chance of an event", "food rate when scavenging", "ammunition rate when scavenging", "money rate when scavenging", "medicine rate when scavenging", "food unit", "ammunition unit", "currency unit", "medicine unit", "health gained when a med kit is used", "chance to cure when a med kit is used", "chance to heal when a med kit is used"
@@ -59,120 +44,171 @@ def Game():
 			gameData += raw_input("What is the " + gameTuple[i] + ": ")
 	game.write(gameData)
 
-def Messages():
-	clearScreen()
-	print "Note: \\n represents a newline character and \\t represents a tab."
-	print "Please type it exactly as you want to see it."
-	messagesData = "startScreen~\n"
-	print "What would you like the start screen to look like:"
-
+def messageScreen(screenType):
+	screenMessage = ''
+	if screenType == 1:
+		screen = " start screen "
+	elif screenType == 2:
+		screen = " game over screen "
+	elif screenType == 3:
+		screen = " win screen "
+		
+	print "Note: Hit enter to go to the next line. Once you go to the next line you cannot go back."
+	print "2nd Note: Hit enter twoce to finish the message"
+	print "What would you like the" + screen + "to look like:\n"
 	while True:
 		line = raw_input()
-		if line.strip() == '':
+		if screenMessage.strip() == '':
 			break
-		messagesData += raw_input("What would you like the start screen to look like:\n")
+		screenMessage += line
+		
+	return screenMessage
+
+# This function creates and writes messages to the Messages .dat file
+def Messages():
+	clearScreen()
+	
+	messagesData = "startScreen~\n"
+	messagesData += messageScreen(1)
 
 	messagesData += '\n~\ngameOver~\n'
-	messagesData += raw_input("What would you like the game over screen to look like:\n")
+	messagesData += messageScreen(2)
+	
 	messagesData += '\n~\nwinScreen~\n'
-	messagesData += raw_input("What would you like the win screen to look like:\n")
+	messagesData += messageScreen(3)
 	messagesData += '~\n'
+	
+	messages = open("Messages.dat", 'w')
 	messages.write(messagesData)
+	messages.close()
 
 def modMessages():
 	clearScreen()
 	print "Note: \\n represents a newline character and \\t represents a tab."
 	print "The current screens are:"
 
-
-def Event():
-
-	newLine = False
-	attrList = 'food', 'ammunition', 'money', 'meds', 'sick', 'health'
-	numAttr = 0
-	for numAttr, attr in enumerate(attrList):
-		if numAttr == 0:
-			printString = str(numAttr+1) + ": " + attr
+# This is one of the helper functions for the Event method. 
+# It shortens the code for creating the attributes and values modified for the choices
+def eventAttr(eventDataList, SuccFail):
+	modAttr = []
+	modVal = []
+	SuccFailList = [' failed: ', ' succeeded: ']
+	attrList = ['1: Food', '2: Ammunition', '3: Money', '4: Meds', '5: Sick', '6: Health']
+	attrTuple = 'food', 'ammunition', 'money', 'meds', 'sick', 'health'
+	numOfAttr = 0
+	
+	clearScreen()
+	print "Note: If it triggers a tree event, put 1."
+	numOfAttr = input("How many player attributes would this choice modify if it" + SuccFailList[SuccFail])
+			
+	if numOfAttr == 0:
+		eventDataList.append('nothing:0')
+				
+	elif numOfAttr == 1:
+		clearScreen()
+		printString = '\n'.join(attrList)
+		printString += "\n7: Tree Event"
+		printString += "\nWhich attribute would be modified by this choice or is there a tree event: "
+		choice = getNumber(printString, 1, 7) - 1
+		if choice == 6:
+			Event(2)
+			eventDataList.append('0')
 		else:
-			printString += "\n" + str(numAttr+1) + ": " + attr
+			eventDataList.append(attrTuple[choice])
+			eventDataList.append(raw_input("How much would this attribute change: "))
+					
+	else:
+		printString = '\n'.join(attrList)
+		printString += "\nWhich attribute would be modified by this choice: "
+		
+		for num in range(0, numOfAttr):
+			clearScreen()
+			choice = getNumber(printString, 1, 6) - 1
+				
+			modAttr.append(attrTuple[choice])
+			modVal.append(raw_input("How much would this attribute change: "))
+			clearScreen()
+		eventDataList.append('/'.join(modAttr))
+		eventDataList.append('/'.join(modVal))
+	return eventDataList
 
-	printString += "\nWhich attribute would be modified by this choice: "
-
+# This function creates and add events to the Event.dat file
+def Event(EventType):
 	moreEvents = True
 
-	while(moreEvents == True):
+	while moreEvents == True:
 		eventData = ''
+		eventDataList = []
 		clearScreen()
-		print "Note: Put a C, R, or T if you want the event to occur in the city, while        traveling or be a tree event, respectively."
-		print "Example: CLookForItems: It occurs in the city and is called LookForItems"
-
-		if newLine:
-			eventData += '\n'
-		eventData += raw_input("What is the name and the type of the event: ")
+		
+		if EventType == 1:
+			print "Note: Put a C or R if you want the event to occur in the city or while traveling, respectively."
+			print "Example: CLookForItems: It occurs in the city and is called LookForItems"
+			eventDataList.append(raw_input("What is the name and the type of the event: "))
+		else:
+			eventDataList.append('\nT' + raw_input("What is the name of the tree event: "))
 
 		clearScreen()
-		eventData += ':' + raw_input("Enter the text that is shown when the event is triggered:\n")
+		eventDataList.append(raw_input("Enter the text that is shown when the event is triggered:\n"))
+		
 		clearScreen()
 		choices = input("How many choices does the player have after this event is triggered: ")
 
 		for i in range(0, choices):
 			clearScreen()
-			eventData += ':' + raw_input("What is the text displayed in the choice menu:\n")
+			eventDataList.append(raw_input("What is the text displayed in the choice menu:\n"))
+			
 			clearScreen()
-			eventData += ':' + raw_input("What is the chance of this choice succeeding: ")
-
-			clearScreen()
-			numOfAttr = input("How many player attributes would this choice modify if succeeded: ")
-			mods = []
-			if numOfAttr == 0:
-				eventData += ':nothing:0'
-			else:
-				for num in range(0, numOfAttr):
-					clearScreen()
-					choice = getNumber(printString, 1, numAttr+1) - 1
-
-					if num == 0:
-						eventData += ':' + attrList[choice]
-					else:
-						eventData += '/' + attrList[choice]
-					mods.append(raw_input("How much would this attribute change: "))
-
-			for num, mod in enumerate(mods):
-				if num == 0:
-					eventData += ':' + mod
-				else:
-					eventData += '/' + mod
-			eventData += ':' + raw_input("What is text displayed for the success of this choice:\n")
-
+			eventDataList.append(raw_input("What is the chance of this choice succeeding: "))
+			eventDataList = eventAttr(eventDataList, 1)
+			eventDataList.append(raw_input("What is the text displayed for the success of this choice:\n"))
 
 			clearScreen()
-			numOfAttr = input("How many player attributes would this choice modify if it failed: ")
-			mods = []
-			for num in range(0, numOfAttr):
-				clearScreen()
-				choice = getNumber(printString, 1, numAttr+1) - 1
-				if num == 0:
-					eventData += ':' + attrList[choice]
-				else:
-					eventData += '/' + attrList[choice]
-				mods.append(raw_input("How much would this attribute change: "))
-
-			for num, mod in enumerate(mods):
-				if num == 0:
-					eventData += ':' + mod
-				else:
-					eventData += '/' + mod
-			eventData += ':' + raw_input("What is text displayed for the failure of this choice:\n")
+			eventDataList = eventAttr(eventDataList, 0)
+			eventDataList.append(raw_input("What is text displayed for the failure of this choice:\n"))
+		
+		eventData = ':'.join(eventDataList)
+		event = open("Event.dat", 'a')
 		event.write(eventData)
+		event.close()
 
 		clearScreen()
-		cont = raw_input("Would you like to add another event: y/n\n")
-
+		if EventType == 1:
+			cont = raw_input("Would you like to add another event: y/n\n")
+		else:		
+			return eventDataList[0]
 		if(cont == 'n'):
 			moreEvents = False
 
-		newLine = True
-
+# This function allows to add or delete events form the Event.dat file		
+def modEvent():
+	while True:
+		printString = "1: Add events\n2: Delete events\n3: Exit\nWhat would you like to do: "	
+		choice = getNumber(printString, 1, 3)
+		if choice == 1:
+			Event(1)
+		elif choice == 2:
+			eventFile = []
+			deleteList = []
+			events = open("Event.dat", 'r')
+			for eventLine in events:
+				eventFile.append(eventLine)
+				deleteList.append(eventLine.split(':')[0])
+				
+			for i, element in enumerate(deleteList):
+				deleteList[i] = str(i+1) + ': ' + element
+			
+			printString = '\n'.join(deleteList)
+			printString += "\nWhich event would you like to delete: "
+			choice = getNumber(printString, 1, i+1) - 1
+			eventFile.pop(choice)
+			eventData = '\n'.join(eventFile)
+			events = open("Event.dat", 'w')
+			events.write(eventData)
+			events.close()
+		elif choice == 3:
+			break
+			
 # This is function that is called to add cities when a new directory is created
 def Cities():
 	cities = open('Cities.txt', 'w')
@@ -333,7 +369,9 @@ while True:
 
 	if new == True:
 		if choice == 1:
-			Event()
+			event = open("Event.dat", 'w')
+			event.close()
+			Event(1)
 		elif choice == 2:
 			Cities()
 		elif choice == 3:

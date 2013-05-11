@@ -74,12 +74,15 @@ def castEffect(effect):
                     if len(notFullChars)>0:
                         char = random.choice(notFullChars)
                         returnStuff.append(char.name + " has gained " + str(amt) + " health.\n")
+                        char.health+=amt
+                        if char.health>100:
+                            char.health=100
                 else:
                     notDeadChars = [character for character in Characters if character.health >0]
                     if len(notDeadChars)> 0:
                         char = random.choice(notDeadChars)
                         returnStuff.append(char.name + " has lost " + str(amt*-1) + " health.\n")
-                char.health+=amt
+                        char.health+=amt
             elif att == "sick":
                 if amt == 0:
                     sickChars = [character for character in Characters if character.isSick]

@@ -3,10 +3,15 @@
 import os
 import sys
 import string
+import copy
 
+# The clearScreen and getNumber methods are pulled from another on of the game files.
+# The clearScreen just clears the screen.
 def clearScreen():
     os.system( [ 'clear', 'cls' ][ os.name == 'nt' ] )
 
+# getnumber lists the possible choices and tells the user if they try to input a choice
+# that is not on the list
 def getNumber(menu, min, max, dontInclude = []):
     isGood = True
     while True:
@@ -31,18 +36,48 @@ def getNumber(menu, min, max, dontInclude = []):
     return num
 
 # This function creates and writes all the data to the Game.dat file
+# Everything had to be hard-coded in since that are all different elements
 def Game():
 	gameData = ''
-	gameTuple = "base travel rate", "base eating rate", "number of hours to scavenge", "number of  characters in your party", "chance to get sick", "health at which you can get sick", "health lost when sick", "health lost with the 'no meal' option", "health lost with the 'small meal' option", "health lost with the 'skimpy meal' option", "health lost with 'fast travel' option", "health lost with 'grueling travel' option", "disease name", "distance unit", "chance of an event", "food rate when scavenging", "ammunition rate when scavenging", "money rate when scavenging", "medicine rate when scavenging", "food unit", "ammunition unit", "currency unit", "medicine unit", "health gained when a med kit is used", "chance to cure when a med kit is used", "chance to heal when a med kit is used"
+	gameTuple = "base travel rate", "base eating rate", "number of hours to scavenge", "number of  characters in your party", "chance to get sick", "health at which you can get sick", "health lost when sick", "health lost with the 'no meal' option", "health lost with the 'small meal' option", "health lost with the 'skimpy meal' option", "health lost with 'fast travel' option", "health lost with 'grueling travel' option", "disease name", "distance unit", "chance of an event",'','','','', "food rate when scavenging", "ammunition rate when scavenging", "money rate when scavenging", "medicine rate when scavenging", "food unit", "ammunition unit", "currency unit", "medicine unit", "health gained when a med kit is used", "chance to cure when a med kit is used", "chance to heal when a med kit is used"
 
-	gameDataTuple = "baseTravelRate:", "\nbaseEatRate:", "\nhoursToScavenge:", "\nnumCharacters:", "\nsickChance:", "\nhealthForSickRoll:", "\nlostHealthSick:", "\nlostHealthNoMeal:", "\nlostHealthSmallMeal:", "\nlostHealthSkimpyMeal:", "\nlostHealthFastTravel:", "\nlostHealthGruelingTravel:", "\ndiseaseName:", "\ndistanceUnit:", "\neventChance:", "\nfoodName:", "\nammunitionName:", "\nmoneyName:", "\nmedicineName:", "\nfoodRate:", "\nammunitionRate:", "\nmoneyRate:", "\nmedicineRate:", "\nfoodUnit:", "\nammunitionUnit:", "\nmoneyUnit:", "\nmedicineUnit:", "\nhealthPerHeal:", "\nchanceToCure:", "\nchanceToHeal:"
+	gameDataTuple = "baseTravelRate:", "\nbaseEatRate:", "\nhoursToScavenge:", "\nnumCharacters:", "\nsickChance:", "\nhealthForSickRoll:", "\nlostHealthSick:", "\nlostHealthNoMeal:", "\nlostHealthSmallMeal:", "\nlostHealthSkimpyMeal:", "\nlostHealthFastTravel:", "\nlostHealthGruelingTravel:", "\ndiseaseName:", "\ndistanceUnit:", "\neventChance:", "\nfoodName:food", "\nammunitionName:ammunition", "\nmoneyName:money", "\nmedicineName:medicine", "\nfoodRate:", "\nammunitionRate:", "\nmoneyRate:", "\nmedicineRate:", "\nfoodUnit:", "\nammunitionUnit:", "\nmoneyUnit:", "\nmedicineUnit:", "\nhealthPerHeal:", "\nchanceToCure:", "\nchanceToHeal:"
 
 	for i, data in enumerate(gameDataTuple):
 		clearScreen()
 		gameData += data
-		if i > 18 and i < 14:
+		if i > 18 or i < 15:
 			gameData += raw_input("What is the " + gameTuple[i] + ": ")
+	game = open("Game.dat", 'w')
 	game.write(gameData)
+	game.close()
+	
+def modGame():
+	gameList = []
+	valChange = []
+	printString = ''
+	
+	game = open("Game.dat", 'r')
+	gameList = game.readlines()
+	game.close()
+	
+	for i, element in enumerate(gameList):
+		printString += str(i+1) + ': ' + element
+		
+	printString += "\nWhich game attribute would you like to modify: "
+	printString += "\nNote: DO NOT modify the foodname, ammunitionname, moneyname, or medicinename.\nThe game will not run if any of those names are changed."
+	choice = getNumber(printString, 1, i+1) - 1
+	
+	value = raw_input("What is the new value or unit: ")
+	valChange = gameList[choice].split(':') 
+	valChange[1] = value + '\n'
+	gameList[choice] = ':'.join(valChange)
+	
+	gameData = ''.join(gameList)
+	
+	game = open("Game.dat", 'w')
+	game.write(gameData)
+	game.close()
 
 def messageScreen(screenType):
 	screenMessage = ''
@@ -52,15 +87,17 @@ def messageScreen(screenType):
 		screen = " game over screen "
 	elif screenType == 3:
 		screen = " win screen "
+	elif screenType == 4:
+		screen = " new screen "
 		
 	print "Note: Hit enter to go to the next line. Once you go to the next line you cannot go back."
-	print "2nd Note: Hit enter twoce to finish the message"
-	print "What would you like the" + screen + "to look like:\n"
+	print "2nd Note: Hit enter twice to finish the message"
+	print "What would you like the" + screen + "to look like:"
 	while True:
 		line = raw_input()
-		if screenMessage.strip() == '':
+		if line.strip() == '':
 			break
-		screenMessage += line
+		screenMessage += line + '\n'
 		
 	return screenMessage
 
@@ -71,10 +108,10 @@ def Messages():
 	messagesData = "startScreen~\n"
 	messagesData += messageScreen(1)
 
-	messagesData += '\n~\ngameOver~\n'
+	messagesData += '~\ngameOver~\n'
 	messagesData += messageScreen(2)
 	
-	messagesData += '\n~\nwinScreen~\n'
+	messagesData += '~\nwinScreen~\n'
 	messagesData += messageScreen(3)
 	messagesData += '~\n'
 	
@@ -83,9 +120,30 @@ def Messages():
 	messages.close()
 
 def modMessages():
-	clearScreen()
-	print "Note: \\n represents a newline character and \\t represents a tab."
-	print "The current screens are:"
+	messages = open("Messages.dat", 'r')
+	messageList = []
+	messageList = messages.readlines()
+	messages.close()
+	
+	messageString = ''.join(messageList)
+	messageString.strip('~')
+	messageList = messageString.split('~\n')
+	
+	tempList = copy.deepcopy(messageList)
+	tempList[0] = '1: ' + tempList[0]
+	tempList[2] = '2: ' + tempList[2]
+	tempList[4] = '3: ' + tempList[4]
+	
+	printString = '\n'.join(tempList)
+	printString += "\nWhich screen would you like to modify: "
+	choice = getNumber(printString, 1, 3) - 1
+	choice = 2*choice + 1
+	messageList[choice] = messageScreen(4)
+	messageData = '~\n'.join(messageList)
+	
+	messages = open("Messages.dat", 'w')
+	messages.write(messageData)
+	messages.close()
 
 # This is one of the helper functions for the Event method. 
 # It shortens the code for creating the attributes and values modified for the choices
@@ -193,16 +251,18 @@ def modEvent():
 			events = open("Event.dat", 'r')
 			for eventLine in events:
 				eventFile.append(eventLine)
-				deleteList.append(eventLine.split(':')[0])
+				
+			deleteList = copy.deepcopy(eventFile)
 				
 			for i, element in enumerate(deleteList):
-				deleteList[i] = str(i+1) + ': ' + element
+				deleteList[i] = element.split(':')[0]
+				deleteList[i] = str(i+1) + ': ' + deleteList[i]
 			
 			printString = '\n'.join(deleteList)
 			printString += "\nWhich event would you like to delete: "
 			choice = getNumber(printString, 1, i+1) - 1
 			eventFile.pop(choice)
-			eventData = '\n'.join(eventFile)
+			eventData = ''.join(eventFile)
 			events = open("Event.dat", 'w')
 			events.write(eventData)
 			events.close()
@@ -211,7 +271,6 @@ def modEvent():
 			
 # This is function that is called to add cities when a new directory is created
 def Cities():
-	cities = open('Cities.txt', 'w')
 	city = []
 	distance = []
 	numOfCities = ''
@@ -251,6 +310,7 @@ def Cities():
 
 		cityData += '\n' + city[i] + ':' + distance[i]
 
+	cities = open('Cities.dat', 'w')
 	cities.write(cityData)
 	cities.close()
 
@@ -263,7 +323,7 @@ def modCities():
 		cityList = []
 		printString = '1: Add cities\n2: Delete cities\n3: Exit\nWhat would you like to do: '
 		choice = getNumber(printString, 1, 3)
-		cities = open('Cities.txt', 'r')
+		cities = open('Cities.dat', 'r')
 		cityList = cities.readlines()
 		cities.close()
 		i = 0
@@ -303,18 +363,19 @@ def modCities():
 			clearScreen()
 			printString = printString.strip('\n')
 
-			printString += "\nWhich line would you like to delete: "
-			choice = getNumber(printString, 1, i+1)	- 1
-			cityList.pop(choice)
+			printString += "\nWhich city would you like to delete: "
+			cityPop = getNumber(printString, 1, i+1)	- 1
+			cityList.pop(cityPop)
 			clearScreen()
 			if raw_input("Do you want to delete another line: y/n\n") == 'n':
 				break
 
 		if choice == 3:
 			break
+			
 		city = ''.join(cityList)
 
-		cities = open('Cities.txt', 'w')
+		cities = open('Cities.dat', 'w')
 		cities.write(city)
 		cities.close()
 
